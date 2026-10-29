@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hospital-monitor"
+version = "1.0.0"
+description = "Monitoramento multimodal de pacientes (vídeo, áudio, texto, sinais vitais) com detecção de anomalias e alertas — Tech Challenge Fase 4"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26", "pandas>=2.1", "scipy>=1.11", "scikit-learn>=1.4", "joblib", "matplotlib>=3.8",
+  "opencv-python-headless>=4.9", "praat-parselmouth>=0.4.3", "soundfile>=0.12", "pyyaml",
+  "fastapi>=0.110", "uvicorn>=0.29", "python-multipart", "requests", "streamlit>=1.33",
+]
+
+[project.optional-dependencies]
+ml = ["faster-whisper>=1.0", "ultralytics>=8.1", "mediapipe>=0.10.14", "pysentimiento>=0.7", "redis>=5"]
+dev = ["pytest>=8", "httpx", "ruff"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120

@@ -1,0 +1,30 @@
+{
+  "mean": {
+    "f0_sd_st": 0.57135,
+    "jitter_pct": 0.99139,
+    "shimmer_pct": 6.77438,
+    "hnr_db": 18.84526,
+    "intensity_db": -25.39693,
+    "syllable_rate": 3.5,
+    "rate_cv": 0.34129,
+    "pause_ratio": 0.13792,
+    "mean_pause_s": 0.33219,
+    "syllables_per_phrase": 7.10317,
+    "breath_per_min": 0.0
+  },
+  "std": {
+    "f0_sd_st": 0.3,
+    "jitter_pct": 0.26759,
+    "shimmer_pct": 1.01616,
+    "hnr_db": 2.82679,
+    "intensity_db": 3.80954,
+    "syllable_rate": 0.525,
+    "rate_cv": 0.05119,
+    "pause_ratio": 0.05,
+    "mean_pause_s": 0.1,
+    "syllables_per_phrase": 1.06548,
+    "breath_per_min": 2.0
+  },
+  "n": 12,
+  "source": "synthetic-healthy (n=12)"
+}

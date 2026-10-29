@@ -1,0 +1,12 @@
+timestamp,patient_id,drug,dose,freq_per_day,unit,route,prescriber,label,anomaly_type
+2026-10-26 08:00:00-03:00,P001,dipirona,1000.0,4,mg,IV,CRM5258,0,
+2026-10-26 08:00:00-03:00,P001,omeprazol,40.0,1,mg,IV,CRM5605,0,
+2026-10-26 08:00:00-03:00,P001,enoxaparina,40.0,1,mg,SC,CRM7795,0,
+2026-10-26 08:00:00-03:00,P001,losartana,50.0,1,mg,VO,CRM9553,0,
+2026-10-26 08:00:00-03:00,P001,ceftriaxona,1000.0,2,mg,IV,CRM1313,0,
+2026-10-27 08:12:00-03:00,P001,losartana,100.0,1,mg,VO,CRM2211,0,
+2026-10-27 08:17:00-03:00,P001,dipirona,1000.0,4,mg,IV,CRM2211,0,
+2026-10-27 10:12:00-03:00,P001,furosemida,40.0,1,mg,IV,CRM3020,0,
+2026-10-28 08:22:00-03:00,P001,losartana,50.0,1,mg,VO,CRM2211,0,
+2026-10-28 08:27:00-03:00,P001,dipirona,1000.0,4,mg,IV,CRM2211,0,
+2026-10-28 12:00:00-03:00,P001,enoxaparina,400.0,1,mg,SC,CRM7781,1,decimal_error

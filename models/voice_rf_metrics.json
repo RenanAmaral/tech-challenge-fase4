@@ -1,0 +1,49 @@
+{
+ "cv_accuracy": 1.0,
+ "labels": [
+  "normal",
+  "fadiga",
+  "disartria",
+  "dispneia"
+ ],
+ "matrix": [
+  [
+   30,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   30,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   30,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   30
+  ]
+ ],
+ "importances": {
+  "jitter_pct": 0.164,
+  "shimmer_pct": 0.153,
+  "mean_pause_s": 0.148,
+  "syllable_rate": 0.139,
+  "hnr_db": 0.119,
+  "pause_ratio": 0.105,
+  "syllables_per_phrase": 0.077,
+  "breath_per_min": 0.073,
+  "intensity_db": 0.015,
+  "f0_sd_st": 0.005,
+  "rate_cv": 0.003
+ },
+ "n": 120
+}

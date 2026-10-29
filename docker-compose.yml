@@ -1,0 +1,21 @@
+# docker compose up --build   → API em :8000/docs, painel em :8501
+services:
+  demo:
+    build: .
+    command: python scripts/run_demo.py --quiet
+    volumes: ["./outputs:/app/outputs"]
+  api:
+    build: .
+    ports: ["8000:8000"]
+    env_file: [{path: .env, required: false}]
+    volumes: ["./outputs:/app/outputs"]
+  dashboard:
+    build: .
+    command: streamlit run dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports: ["8501:8501"]
+    volumes: ["./outputs:/app/outputs"]
+    depends_on:
+      demo: {condition: service_completed_successfully}
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]

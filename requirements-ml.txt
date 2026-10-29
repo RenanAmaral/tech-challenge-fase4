@@ -1,0 +1,6 @@
+# Modelos pré-treinados (opcionais, baixam pesos na 1ª execução — gratuitos)
+faster-whisper>=1.0        # Whisper local (speech-to-text pt-BR)
+ultralytics>=8.1           # YOLOv8 (detecção de objetos e pose)
+mediapipe>=0.10.14         # MediaPipe Pose Landmarker
+pysentimiento>=0.7         # sentimento pt-BR (BERTweet-pt)
+redis>=5                   # barramento Redis Streams (docker compose)

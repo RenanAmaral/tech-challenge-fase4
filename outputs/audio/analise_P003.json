@@ -1,0 +1,183 @@
+{
+ "patient_id": "P003",
+ "audio_path": "data/audio/consulta_P003.wav",
+ "transcript": {
+  "text": "Minha esposa disse que minha fala está enrolada desde ontem à noite. Sinto uma fraqueza no braço direito e o rosto meio dormente. Não tenho febre nem dor de cabeça.",
+  "backend": "sidecar",
+  "segments": []
+ },
+ "acoustic_features": {
+  "duration_s": 14.0,
+  "f0_mean": 117.4372,
+  "f0_sd_st": 0.5203,
+  "jitter_pct": 4.3826,
+  "shimmer_pct": 17.8297,
+  "hnr_db": 3.4555,
+  "intensity_db": -29.7337,
+  "syllable_rate": 2.2143,
+  "rate_cv": 0.4324,
+  "pause_ratio": 0.2193,
+  "mean_pause_s": 0.614,
+  "n_long_pauses": 3,
+  "syllables_per_phrase": 5.1667,
+  "breath_per_min": 0.0,
+  "backend": "praat"
+ },
+ "voice_assessment": {
+  "scores": {
+   "fadiga": 0.63,
+   "disartria": 0.902,
+   "dispneia": 0.329
+  },
+  "main_condition": "disartria",
+  "anomaly_score": 0.902,
+  "z_scores": {
+   "f0_sd_st": -0.17,
+   "jitter_pct": 12.67,
+   "shimmer_pct": 10.88,
+   "hnr_db": -5.44,
+   "intensity_db": -1.14,
+   "syllable_rate": -2.45,
+   "rate_cv": 1.78,
+   "pause_ratio": 1.63,
+   "mean_pause_s": 2.82,
+   "syllables_per_phrase": -1.82,
+   "breath_per_min": 0.0
+  },
+  "drivers": [
+   "jitter_pct: z=+12.7",
+   "shimmer_pct: z=+10.9",
+   "hnr_db: z=-5.4",
+   "syllable_rate: z=-2.4"
+  ],
+  "classifier_probs": {
+   "disartria": 0.993,
+   "dispneia": 0.0,
+   "fadiga": 0.007,
+   "normal": 0.0
+  }
+ },
+ "text_analysis": {
+  "findings": [
+   {
+    "term": "disartria",
+    "category": "sinal_alarme",
+    "severity": 0.95,
+    "matched_text": "fala esta enrolada",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 5,
+    "effective_severity": 0.95
+   },
+   {
+    "term": "déficit motor",
+    "category": "sinal_alarme",
+    "severity": 0.9,
+    "matched_text": "fraqueza no braco",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 15,
+    "effective_severity": 0.9
+   },
+   {
+    "term": "parestesia facial",
+    "category": "sinal_alarme",
+    "severity": 0.85,
+    "matched_text": "rosto meio dormente",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 21,
+    "effective_severity": 0.85
+   },
+   {
+    "term": "febre",
+    "category": "sintoma",
+    "severity": 0.5,
+    "matched_text": "febre",
+    "negated": true,
+    "uncertain": false,
+    "start_token": 27,
+    "effective_severity": 0.0
+   },
+   {
+    "term": "cefaleia",
+    "category": "sintoma",
+    "severity": 0.45,
+    "matched_text": "dor de cabeca",
+    "negated": true,
+    "uncertain": false,
+    "start_token": 29,
+    "effective_severity": 0.0
+   }
+  ],
+  "medications": [],
+  "sentiment": {
+   "label": "NEG",
+   "compound": -0.167,
+   "backend": "lexicon"
+  },
+  "critical_terms": [
+   "disartria",
+   "déficit motor",
+   "parestesia facial"
+  ],
+  "anomaly_score": 1.0
+ },
+ "events": [
+  {
+   "patient_id": "P003",
+   "modality": "audio",
+   "kind": "voz_disartria",
+   "anomaly_score": 0.9020062075543636,
+   "timestamp": "2026-10-28T10:05:00-03:00",
+   "description": "Voz com sinais compatíveis com disartria (instabilidade vocal, ritmo irregular).",
+   "evidence": {
+    "scores": {
+     "fadiga": 0.63,
+     "disartria": 0.902,
+     "dispneia": 0.329
+    },
+    "drivers": [
+     "jitter_pct: z=+12.7",
+     "shimmer_pct: z=+10.9",
+     "hnr_db: z=-5.4",
+     "syllable_rate: z=-2.4"
+    ],
+    "audio": "data/audio/consulta_P003.wav",
+    "classifier_probs": {
+     "disartria": 0.993,
+     "dispneia": 0.0,
+     "fadiga": 0.007,
+     "normal": 0.0
+    }
+   },
+   "source": "audio.voice_analyzer",
+   "event_id": "43666649ca2f",
+   "severity": "critical"
+  },
+  {
+   "patient_id": "P003",
+   "modality": "text",
+   "kind": "relato_sintomas",
+   "anomaly_score": 1.0,
+   "timestamp": "2026-10-28T10:05:00-03:00",
+   "description": "Paciente relata: disartria, déficit motor, parestesia facial.",
+   "evidence": {
+    "critical_terms": [
+     "disartria",
+     "déficit motor",
+     "parestesia facial"
+    ],
+    "sentiment": {
+     "label": "NEG",
+     "compound": -0.167,
+     "backend": "lexicon"
+    },
+    "transcript_excerpt": "Minha esposa disse que minha fala está enrolada desde ontem à noite. Sinto uma fraqueza no braço direito e o rosto meio dormente. Não tenho febre nem dor de cabeça."
+   },
+   "source": "audio.clinical_nlp",
+   "event_id": "b011aaee3cea",
+   "severity": "critical"
+  }
+ ]
+}

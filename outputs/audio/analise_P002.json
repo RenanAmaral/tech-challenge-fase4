@@ -1,0 +1,88 @@
+{
+ "patient_id": "P002",
+ "audio_path": "data/audio/consulta_P002.wav",
+ "transcript": {
+  "text": "Bom dia, doutor. Estou me sentindo bem melhor hoje. Não tenho dor no peito nem falta de ar. Dormi bem e consegui caminhar no corredor com a fisioterapeuta. Estou animado para ir para casa.",
+  "backend": "sidecar",
+  "segments": []
+ },
+ "acoustic_features": {
+  "duration_s": 14.0,
+  "f0_mean": 131.219,
+  "f0_sd_st": 0.5786,
+  "jitter_pct": 0.7575,
+  "shimmer_pct": 6.7368,
+  "hnr_db": 19.0938,
+  "intensity_db": -26.5362,
+  "syllable_rate": 3.6429,
+  "rate_cv": 0.3673,
+  "pause_ratio": 0.0907,
+  "mean_pause_s": 0.3175,
+  "n_long_pauses": 0,
+  "syllables_per_phrase": 10.2,
+  "breath_per_min": 0.0,
+  "backend": "praat"
+ },
+ "voice_assessment": {
+  "scores": {
+   "fadiga": 0.023,
+   "disartria": 0.031,
+   "dispneia": 0.0
+  },
+  "main_condition": null,
+  "anomaly_score": 0.015,
+  "z_scores": {
+   "f0_sd_st": 0.02,
+   "jitter_pct": -0.87,
+   "shimmer_pct": -0.04,
+   "hnr_db": 0.09,
+   "intensity_db": -0.3,
+   "syllable_rate": 0.27,
+   "rate_cv": 0.51,
+   "pause_ratio": -0.94,
+   "mean_pause_s": -0.15,
+   "syllables_per_phrase": 2.91,
+   "breath_per_min": 0.0
+  },
+  "drivers": [],
+  "classifier_probs": {
+   "disartria": 0.0,
+   "dispneia": 0.0,
+   "fadiga": 0.0,
+   "normal": 1.0
+  }
+ },
+ "text_analysis": {
+  "findings": [
+   {
+    "term": "dor torácica",
+    "category": "sinal_alarme",
+    "severity": 0.95,
+    "matched_text": "dor no peito",
+    "negated": true,
+    "uncertain": false,
+    "start_token": 13,
+    "effective_severity": 0.0
+   },
+   {
+    "term": "dispneia",
+    "category": "sinal_alarme",
+    "severity": 0.9,
+    "matched_text": "falta de ar",
+    "negated": true,
+    "uncertain": false,
+    "start_token": 17,
+    "effective_severity": 0.0
+   }
+  ],
+  "medications": [],
+  "sentiment": {
+   "label": "POS",
+   "compound": 0.929,
+   "backend": "lexicon"
+  },
+  "critical_terms": [],
+  "anomaly_score": 0.0
+ },
+ "events": []
+}

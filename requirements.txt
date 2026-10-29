@@ -1,0 +1,18 @@
+# Núcleo — tudo gratuito e roda em CPU (instale com: pip install -r requirements.txt)
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+scikit-learn>=1.4
+joblib
+matplotlib>=3.8
+opencv-python-headless>=4.9
+praat-parselmouth>=0.4.3
+soundfile>=0.12
+pyyaml
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart
+requests
+streamlit>=1.33
+pytest>=8
+httpx

@@ -1,0 +1,15 @@
+# Sobrescreve os padrões de src/hospital_monitor/config.py (apague o que não quiser mudar).
+vitals:
+  z_threshold: 4.0
+  min_episode_samples: 2
+  limits:
+    spo2_low: 92
+    spo2_critical: 88
+    hr_high: 120
+fusion:
+  window_minutes: 15
+  agreement_boost: 0.15
+  weights: {vitals: 1.0, prescription: 0.9, text: 0.8, movement: 0.8, audio: 0.7, video: 0.7}
+alerts:
+  cooldown_minutes: 30
+  min_level: attention

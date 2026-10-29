@@ -1,0 +1,189 @@
+{
+ "patient_id": "P001",
+ "audio_path": "data/audio/consulta_P001.wav",
+ "transcript": {
+  "text": "Doutor, desde a madrugada estou com muita falta de ar e um cansaço muito forte. Sinto uma pressão no peito quando tento levantar e fico tonto. Estou com medo, não consigo respirar direito.",
+  "backend": "sidecar",
+  "segments": []
+ },
+ "acoustic_features": {
+  "duration_s": 14.0,
+  "f0_mean": 125.3018,
+  "f0_sd_st": 0.4515,
+  "jitter_pct": 1.6525,
+  "shimmer_pct": 11.0822,
+  "hnr_db": 5.7698,
+  "intensity_db": -31.5699,
+  "syllable_rate": 1.2857,
+  "rate_cv": 0.1892,
+  "pause_ratio": 0.5164,
+  "mean_pause_s": 0.4519,
+  "n_long_pauses": 0,
+  "syllables_per_phrase": 1.0588,
+  "breath_per_min": 34.2857,
+  "backend": "praat"
+ },
+ "voice_assessment": {
+  "scores": {
+   "fadiga": 0.77,
+   "disartria": 0.723,
+   "dispneia": 0.941
+  },
+  "main_condition": "dispneia",
+  "anomaly_score": 0.941,
+  "z_scores": {
+   "f0_sd_st": -0.4,
+   "jitter_pct": 2.47,
+   "shimmer_pct": 4.24,
+   "hnr_db": -4.63,
+   "intensity_db": -1.62,
+   "syllable_rate": -4.22,
+   "rate_cv": -2.97,
+   "pause_ratio": 7.57,
+   "mean_pause_s": 1.2,
+   "syllables_per_phrase": -5.67,
+   "breath_per_min": 17.14
+  },
+  "drivers": [
+   "breath_per_min: z=+17.1",
+   "syllables_per_phrase: z=-5.7",
+   "pause_ratio: z=+7.6"
+  ],
+  "classifier_probs": {
+   "disartria": 0.0,
+   "dispneia": 1.0,
+   "fadiga": 0.0,
+   "normal": 0.0
+  }
+ },
+ "text_analysis": {
+  "findings": [
+   {
+    "term": "dispneia",
+    "category": "sinal_alarme",
+    "severity": 0.9,
+    "matched_text": "falta de ar",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 7,
+    "effective_severity": 0.9
+   },
+   {
+    "term": "fadiga",
+    "category": "sintoma",
+    "severity": 0.5,
+    "matched_text": "cansaco",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 12,
+    "effective_severity": 0.5
+   },
+   {
+    "term": "dor torácica",
+    "category": "sinal_alarme",
+    "severity": 0.95,
+    "matched_text": "pressao no peito",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 18,
+    "effective_severity": 0.95
+   },
+   {
+    "term": "tontura",
+    "category": "sintoma",
+    "severity": 0.55,
+    "matched_text": "tonto",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 26,
+    "effective_severity": 0.55
+   },
+   {
+    "term": "ansiedade",
+    "category": "sintoma",
+    "severity": 0.3,
+    "matched_text": "medo",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 30,
+    "effective_severity": 0.3
+   },
+   {
+    "term": "dispneia",
+    "category": "sinal_alarme",
+    "severity": 0.9,
+    "matched_text": "nao consigo respirar",
+    "negated": false,
+    "uncertain": false,
+    "start_token": 31,
+    "effective_severity": 0.9
+   }
+  ],
+  "medications": [],
+  "sentiment": {
+   "label": "NEG",
+   "compound": -0.667,
+   "backend": "lexicon"
+  },
+  "critical_terms": [
+   "dispneia",
+   "dor torácica"
+  ],
+  "anomaly_score": 1.0
+ },
+ "events": [
+  {
+   "patient_id": "P001",
+   "modality": "audio",
+   "kind": "voz_dispneia",
+   "anomaly_score": 0.9410291886185804,
+   "timestamp": "2026-10-28T14:20:00-03:00",
+   "description": "Voz com sinais de dificuldade respiratória (frases curtas, inspirações audíveis).",
+   "evidence": {
+    "scores": {
+     "fadiga": 0.77,
+     "disartria": 0.723,
+     "dispneia": 0.941
+    },
+    "drivers": [
+     "breath_per_min: z=+17.1",
+     "syllables_per_phrase: z=-5.7",
+     "pause_ratio: z=+7.6"
+    ],
+    "audio": "data/audio/consulta_P001.wav",
+    "classifier_probs": {
+     "disartria": 0.0,
+     "dispneia": 1.0,
+     "fadiga": 0.0,
+     "normal": 0.0
+    }
+   },
+   "source": "audio.voice_analyzer",
+   "event_id": "22b0df877038",
+   "severity": "critical"
+  },
+  {
+   "patient_id": "P001",
+   "modality": "text",
+   "kind": "relato_sintomas",
+   "anomaly_score": 1.0,
+   "timestamp": "2026-10-28T14:20:00-03:00",
+   "description": "Paciente relata: dispneia, fadiga, dor torácica, tontura, ansiedade.",
+   "evidence": {
+    "critical_terms": [
+     "dispneia",
+     "dor torácica"
+    ],
+    "sentiment": {
+     "label": "NEG",
+     "compound": -0.667,
+     "backend": "lexicon"
+    },
+    "transcript_excerpt": "Doutor, desde a madrugada estou com muita falta de ar e um cansaço muito forte. Sinto uma pressão no peito quando tento levantar e fico tonto. Estou com medo, não consigo respirar direito."
+   },
+   "source": "audio.clinical_nlp",
+   "event_id": "6dcf72e155c7",
+   "severity": "critical"
+  }
+ ]
+}

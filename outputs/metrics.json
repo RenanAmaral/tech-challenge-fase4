@@ -1,0 +1,174 @@
+{
+ "sinais_vitais": {
+  "n_series": 10,
+  "detectores": [
+   {
+    "detector": "limiares",
+    "precision_pontual": 1.0,
+    "recall_pontual": 0.431,
+    "f1_pontual": 0.603,
+    "precision_episodio": 1.0,
+    "recall_episodio": 0.8,
+    "atraso_medio_min": 8.9,
+    "falsos_episodios_por_dia": 0.0
+   },
+   {
+    "detector": "z_baseline",
+    "precision_pontual": 1.0,
+    "recall_pontual": 0.735,
+    "f1_pontual": 0.846,
+    "precision_episodio": 1.0,
+    "recall_episodio": 1.0,
+    "atraso_medio_min": 9.8,
+    "falsos_episodios_por_dia": 0.0
+   },
+   {
+    "detector": "multivariado",
+    "precision_pontual": 1.0,
+    "recall_pontual": 0.421,
+    "f1_pontual": 0.591,
+    "precision_episodio": 1.0,
+    "recall_episodio": 0.48,
+    "atraso_medio_min": 16.0,
+    "falsos_episodios_por_dia": 0.0
+   },
+   {
+    "detector": "combinado",
+    "precision_pontual": 1.0,
+    "recall_pontual": 0.767,
+    "f1_pontual": 0.867,
+    "precision_episodio": 1.0,
+    "recall_episodio": 1.0,
+    "atraso_medio_min": 8.9,
+    "falsos_episodios_por_dia": 0.0
+   },
+   {
+    "detector": "isolation_forest",
+    "precision_pontual": 0.415,
+    "recall_pontual": 0.9,
+    "f1_pontual": 0.566,
+    "precision_episodio": 0.192,
+    "recall_episodio": 1.0,
+    "atraso_medio_min": 1.3,
+    "falsos_episodios_por_dia": 22.6
+   }
+  ],
+  "recall_por_tipo": {
+   "tachycardia": 1.0,
+   "hypotension": 1.0,
+   "desaturation": 1.0,
+   "silent_deterioration": 1.0,
+   "fever": 1.0
+  },
+  "falsos_episodios_em_series_normais_por_dia": 0.0
+ },
+ "prescricoes": {
+  "n_prescricoes": 140,
+  "n_anomalas": 40,
+  "regras": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "tp": 40,
+   "fp": 0,
+   "fn": 0
+  },
+  "isolation_forest_isolado": {
+   "precision": 0.833,
+   "recall": 0.5,
+   "f1": 0.625,
+   "tp": 20,
+   "fp": 4,
+   "fn": 20
+  },
+  "recall_por_tipo": {
+   "decimal_error": 1.0,
+   "above_max": 1.0,
+   "duplication": 1.0,
+   "abrupt_change": 1.0
+  }
+ },
+ "movimentacao": {
+  "n_series": 10,
+  "precision_episodio": 1.0,
+  "recall_episodio": 1.0,
+  "atraso_medio_min": 3.1,
+  "falsos_alarmes_em_48h_normais": 0
+ },
+ "video_fisioterapia": {
+  "recall_por_desvio": {
+   "shallow": 1.0,
+   "asymmetric": 1.0,
+   "valgus": 1.0,
+   "trunk_lean": 1.0
+  },
+  "reps_normais_marcadas": "4/128",
+  "quedas_detectadas": "8/8",
+  "quedas_falsas_em_sessoes_normais": "0/8"
+ },
+ "video_cirurgia": {
+  "n_videos_com_falha": 5,
+  "detectados": {
+   "instrument_outside_field": "5/5",
+   "camera_occlusion": "5/5",
+   "gauze_count_mismatch": "5/5"
+  },
+  "achados_em_videos_normais": "0 em 5"
+ },
+ "nlp_clinico": {
+  "n_frases": 20,
+  "termos_encontrados": "20/20",
+  "negacao_correta": "20/20",
+  "acuracia": 1.0,
+  "erros": []
+ },
+ "voz_classificador": {
+  "cv_accuracy": 1.0,
+  "labels": [
+   "normal",
+   "fadiga",
+   "disartria",
+   "dispneia"
+  ],
+  "matrix": [
+   [
+    30,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    30,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    30,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    30
+   ]
+  ],
+  "importances": {
+   "jitter_pct": 0.164,
+   "shimmer_pct": 0.153,
+   "mean_pause_s": 0.148,
+   "syllable_rate": 0.139,
+   "hnr_db": 0.119,
+   "pause_ratio": 0.105,
+   "syllables_per_phrase": 0.077,
+   "breath_per_min": 0.073,
+   "intensity_db": 0.015,
+   "f0_sd_st": 0.005,
+   "rate_cv": 0.003
+  },
+  "n": 120
+ }
+}
