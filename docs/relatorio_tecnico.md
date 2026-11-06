@@ -250,6 +250,10 @@ A correção seguiu o que a arquitetura já previa: comparar o paciente com **o 
 
 A mesma voz saiu normal nas três consultas lidas normalmente e alterada só na consulta em que a falta de ar foi simulada, pelos marcadores esperados (frases mais curtas e mais pausas). O NLP acertou todas as afirmações e negações. Uma limitação apareceu: o sentimento por léxico classificou a consulta D como positiva, porque leu "sem dor no peito" como algo bom; o pysentimiento (opcional) trata melhor esse caso. Com n = 1 falante e 3 gravações de baseline, isso demonstra o funcionamento, não a acurácia.
 
+**Vídeo real de fisioterapia.** Um integrante gravou 6 agachamentos corretos com o celular parado (23 s, 1080p). O YOLOv8m-pose (2D) rastreou o corpo com confiança média de 0,99 nos joelhos e 0,91 nos tornozelos. O sistema segmentou as 6 repetições sozinho (ROM do joelho de 73° a 86°, DTW de 2,1 a 6,6° contra a média) e o vídeo virou a referência do exercício. Uma primeira tentativa com a câmera perto demais, sem os pés no quadro, foi descartada: sem tornozelo não há ângulo de joelho confiável.
+
+O vídeo real expôs dois ajustes, já incorporados: (1) em 2D, a câmera em diagonal faz uma perna parecer mais encurtada que a outra, e a assimetria medida chegou a 30–50° num movimento simétrico; por isso o limite de assimetria passou a ser relativo à referência (mesma câmera, mesmo posicionamento), como já eram a profundidade e o tronco; (2) o movimento de caminhar até o celular no fim da gravação virava uma "repetição" rasa; repetições na borda do vídeo com menos da metade da amplitude típica agora são descartadas. As métricas nos dados sintéticos não mudaram. O valgo dinâmico só é medido com pose 3D (MediaPipe).
+
 ## 7. Limitações, ética e LGPD
 
 - **Apoio, não substituição.** Os alertas trazem as evidências que os geraram (valores, termos, features) para que o profissional decida.

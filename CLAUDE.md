@@ -89,7 +89,8 @@ Python 3.10–3.12 recomendado (MediaPipe ainda não tem wheel para versões mai
 - [x] Whisper instalado e rodando na máquina local.
 - [x] Voz real testada (06/11/2026): baseline com 3 textos + consultas A–D pelo WhatsApp; B (falta de ar simulada) → dispneia 0,67; A, C, D → voz normal. Resultados na seção 6.3 do relatório técnico. Gravações ficam fora do Git.
 - [ ] Rodar as mesmas consultas com `--transcriber whisper` na máquina local e conferir a transcrição.
-- [ ] Testar `scripts/analyze_video.py fisio` com um vídeo do celular (precisa do MediaPipe; Python ≤ 3.12). Fluxo: `referencia` com o vídeo correto (grava `models/squat_reference_real.json`, fora do Git, sem alterar a referência sintética da demo) e depois `fisio` com a sessão.
+- [x] Vídeo de referência real (06/11/2026): 6 agachamentos corretos, YOLOv8m-pose 2D (`--backend yolo`, pesos baixados do GitHub), 6 reps segmentadas. Referência em `models/squat_reference_real.json` (fora do Git). Assimetria agora é relativa à referência (efeito do ângulo da câmera em 2D); reps rasas na borda do vídeo são descartadas.
+- [ ] Gravar o vídeo de **sessão** (6 agachamentos, 2º e 5º errados) com a **mesma câmera e posição** da referência e rodar `python scripts/analyze_video.py fisio sessao.mp4 --patient P010 --backend yolo`. O esqueleto é desenhado sobre o vídeo original em `outputs/real/fisio_P010.mp4`.
 - [ ] Gravar vídeos de exercício (correto e incorreto) e consultas simuladas com consentimento do grupo.
 - [ ] YOLOv8 de cirurgia: precisa de pesos com fine-tuning em instrumental (m2cai16-tool, Cholec80 ou dataset rotulado no Roboflow) em `models/surgical_yolov8n.pt`. Sem isso, a demo usa detecções simuladas.
 - [ ] Opcional: validar sinais vitais em dados reais com `scripts/download_physionet.py --records 1 2 3 --inject desaturation`.

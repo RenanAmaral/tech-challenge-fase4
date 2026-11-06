@@ -26,9 +26,13 @@ def project(kp_xyz: np.ndarray, size: int = 480, yaw_deg: float = 35.0) -> np.nd
         scale = size * 0.72 / 1.7
         u = size / 2 + x * scale
         v = size * 0.92 - y * scale
-    else:
-        u = kp_xyz[:, 0] * size
-        v = (1 - kp_xyz[:, 1]) * size
+    else:  # 2D: enquadra o corpo no centro da imagem
+        x, y = kp_xyz[:, 0], kp_xyz[:, 1]
+        cx, cy = (np.nanmin(x) + np.nanmax(x)) / 2, (np.nanmin(y) + np.nanmax(y)) / 2
+        span = max(np.nanmax(x) - np.nanmin(x), np.nanmax(y) - np.nanmin(y), 1e-6)
+        scale = size * 0.72 / span
+        u = size / 2 + (x - cx) * scale
+        v = size * 0.56 - (y - cy) * scale  # abaixo do rótulo
     return np.stack([u, v], axis=1)
 
 
@@ -38,7 +42,9 @@ def draw_frame(kp: np.ndarray, size: int = 480, bad: bool = False, label: str = 
     xyz = kp[:, :-1]
     if np.isnan(xyz).all():
         return img
-    pts = project(np.nan_to_num(xyz), size)
+    if xyz.shape[-1] == 2:  # 2D: sem linha de chão fixa
+        img[:] = 248
+    pts = project(np.where(np.isnan(xyz), np.nanmean(xyz, axis=0), xyz), size)
     color = BAD if bad else OK
     for a, b in SKELETON:
         cv2.line(img, tuple(int(v) for v in pts[a]), tuple(int(v) for v in pts[b]), color, 4, cv2.LINE_AA)
@@ -68,4 +74,44 @@ def keyframe_png(kp: np.ndarray, frame: int, path: str | Path, label: str, bad: 
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     cv2.imwrite(str(path), draw_frame(kp[frame], 360, bad, label))
+    return path
+
+
+def render_overlay(video_path: str | Path, kp: np.ndarray, fps: float, path: str | Path, deviations=(),
+                   height: int = 960) -> Path:
+    """Desenha o esqueleto sobre o vídeo original (verde = ok, vermelho = desvio).
+
+    ``kp`` em coordenadas 2D normalizadas pela altura do quadro (saída do YOLOv8-pose),
+    amostradas em ``fps``.
+    """
+    from .pose import read_video_frames
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    vw = None
+    for i, _, bgr in read_video_frames(video_path, fps):
+        if i >= len(kp):
+            break
+        scale = height / bgr.shape[0]
+        img = cv2.resize(bgr, (int(bgr.shape[1] * scale) // 2 * 2, height))
+        if vw is None:
+            vw = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), fps, (img.shape[1], height))
+        active = [d for d in deviations if d.start_frame <= i <= d.end_frame]
+        color = BAD if active else OK
+        p = kp[i]
+        pts = np.stack([p[:, 0] * height, (1 - p[:, 1]) * height], axis=1)
+        for a, b in SKELETON:
+            if not (np.isnan(pts[a]).any() or np.isnan(pts[b]).any()):
+                cv2.line(img, tuple(int(v) for v in pts[a]), tuple(int(v) for v in pts[b]), color, 5, cv2.LINE_AA)
+        for q in pts:
+            if not np.isnan(q).any():
+                cv2.circle(img, (int(q[0]), int(q[1])), 6, (255, 255, 255), -1, cv2.LINE_AA)
+        lbl = LABEL.get(active[0].kind, active[0].kind).upper() if active else "OK"
+        cv2.rectangle(img, (0, 0), (img.shape[1], 70), (30, 30, 30), -1)
+        cv2.putText(img, lbl, (16, 46), cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 3, cv2.LINE_AA)
+        cv2.putText(img, f"t = {i / fps:4.1f} s", (img.shape[1] - 190, 46), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                    (230, 230, 230), 2, cv2.LINE_AA)
+        vw.write(img)
+    if vw is not None:
+        vw.release()
     return path

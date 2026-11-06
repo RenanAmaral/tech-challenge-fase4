@@ -48,7 +48,9 @@ def exercise_report(res: ExerciseResult, kp: np.ndarray, path: str | Path, sessi
             f"<div class='kpi'><b>{s['n_deviations']}</b><span>desvios</span></div>"
             f"<div class='kpi'><b>{s['duration_s']} s</b><span>duração</span></div>"
             f"<div class='kpi'><b>{pill(worst) if res.events else pill('info')}</b><span>nível</span></div></div>")
-    rows = [[r["rep"] + 1, f"{r['rom']:.0f}°", f"{r['asym_max']:.0f}°", f"{r['valgus_max']:.1f} cm",
+    is3d = kp.shape[-1] == 4
+    rows = [[r["rep"] + 1, f"{r['rom']:.0f}°", f"{r['asym_max']:.0f}°",
+             f"{r['valgus_max']:.1f} cm" if is3d else "— (só 3D)",
              f"{r['trunk_max']:.0f}°", f"{r['dtw']:.1f}",
              ", ".join(kind_pt(d["kind"]) for d in s["deviations"] if d["rep"] == r["rep"]) or "—"] for r in s["reps"]]
     dev_rows = [[esc(kind_pt(d.kind)), d.rep + 1 if d.rep is not None else "—", f"{d.start_frame / res.fps:.1f}–{d.end_frame / res.fps:.1f} s",

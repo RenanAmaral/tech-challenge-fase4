@@ -46,6 +46,7 @@ class ExerciseReference:
     dtw_mean: float
     dtw_std: float
     n_reps: int
+    asym_max: float = 0.0  # assimetria E/D da execução correta (em 2D, inclui o efeito do ângulo da câmera)
 
     def save(self, path: str | Path) -> None:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -122,8 +123,14 @@ def _prep(kp: np.ndarray) -> np.ndarray:
     return kp
 
 
-def segment_reps(knee: np.ndarray, fps: float, prominence: float = 25.0) -> list[tuple[int, int]]:
-    """Repetições = vales do ângulo do joelho; limites nos picos (em pé) vizinhos."""
+def segment_reps(knee: np.ndarray, fps: float, prominence: float = 25.0,
+                 edge_s: float = 1.5) -> list[tuple[int, int]]:
+    """Repetições = vales do ângulo do joelho; limites nos picos (em pé) vizinhos.
+
+    Descarta movimentos nas bordas do vídeo (até ``edge_s`` do início ou do fim)
+    com amplitude menor que metade da mediana das repetições — por exemplo, a
+    pessoa caminhando até o celular para parar a gravação.
+    """
     valleys, _ = find_peaks(-knee, prominence=prominence, distance=int(0.8 * fps))
     peaks, _ = find_peaks(knee, distance=int(0.3 * fps))
     standing = np.concatenate([[0], peaks, [len(knee) - 1]])
@@ -132,6 +139,12 @@ def segment_reps(knee: np.ndarray, fps: float, prominence: float = 25.0) -> list
         s = standing[standing < v].max()
         e = standing[standing > v].min()
         reps.append((int(s), int(e)))
+    if len(reps) >= 3:
+        roms = np.array([np.ptp(knee[s : e + 1]) for s, e in reps])
+        med = np.median(roms)
+        edge = edge_s * fps
+        reps = [r for r, rom in zip(reps, roms)
+                if not ((r[0] < edge or r[1] > len(knee) - 1 - edge) and rom < 0.5 * med)]
     return reps
 
 
@@ -152,8 +165,9 @@ def build_reference(kp: np.ndarray, fps: float) -> ExerciseReference:
     dtws = [K.dtw_distance(c, mean_curve, band=10) for c in curves]
     roms = [np.ptp(knee[s : e + 1]) for s, e in reps]
     trunk = [ang["trunk_lean"][s : e + 1].max() for s, e in reps]
+    asym = [np.max(np.abs(ang["knee_l"][s : e + 1] - ang["knee_r"][s : e + 1])) for s, e in reps]
     return ExerciseReference(mean_curve.round(3).tolist(), float(np.mean(roms)), float(np.mean(trunk)),
-                             float(np.mean(dtws)), float(np.std(dtws)), len(reps))
+                             float(np.mean(dtws)), float(np.std(dtws)), len(reps), float(np.mean(asym)))
 
 
 def _score(excess_ratio: float) -> float:
@@ -205,9 +219,10 @@ class ExerciseAnalyzer:
             if rom < th.rom_ratio_min * ref.rom:
                 devs.append(Deviation("shallow", i, s, e, _score((th.rom_ratio_min * ref.rom - rom) / (0.3 * ref.rom)),
                                       rom, f"≥ {th.rom_ratio_min * ref.rom:.0f}° de ROM", DEVIATION_TEXT["shallow"]))
-            if asym > th.asym_deg:
-                devs.append(Deviation("asymmetric", i, s, e, _score((asym - th.asym_deg) / th.asym_deg), asym,
-                                      f"≤ {th.asym_deg:.0f}° de diferença E/D", DEVIATION_TEXT["asymmetric"]))
+            asym_lim = ref.asym_max + th.asym_deg  # relativo à execução correta (ângulo de câmera em 2D)
+            if asym > asym_lim:
+                devs.append(Deviation("asymmetric", i, s, e, _score((asym - asym_lim) / th.asym_deg), asym,
+                                      f"≤ {asym_lim:.0f}° de diferença E/D", DEVIATION_TEXT["asymmetric"]))
             if valg > th.valgus_cm:
                 devs.append(Deviation("valgus", i, s, e, _score((valg - th.valgus_cm) / th.valgus_cm), valg,
                                       f"≤ {th.valgus_cm:.0f} cm medial", DEVIATION_TEXT["valgus"]))

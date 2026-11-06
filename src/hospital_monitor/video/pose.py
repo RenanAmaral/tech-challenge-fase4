@@ -95,10 +95,18 @@ class MediaPipePoseEstimator:  # pragma: no cover - exige modelo baixado
 
 
 class YoloPoseEstimator:  # pragma: no cover - exige pesos do YOLOv8
-    def __init__(self, weights: str = "yolov8n-pose.pt"):
+    """YOLOv8-pose (2D). Pesos baixados do GitHub da Ultralytics na 1ª execução.
+
+    Mantém a maior pessoa do quadro e descarta pontos com confiança < ``min_conf``
+    (viram NaN e são interpolados depois). Coordenadas normalizadas pela altura do
+    quadro, com y para cima.
+    """
+
+    def __init__(self, weights: str = "yolov8m-pose.pt", min_conf: float = 0.3):
         from ultralytics import YOLO
 
         self.model = YOLO(weights)
+        self.min_conf = min_conf
 
     def estimate_video(self, path: str | Path, fps: float = 15.0) -> tuple[np.ndarray, float]:
         frames = []
@@ -106,12 +114,15 @@ class YoloPoseEstimator:  # pragma: no cover - exige pesos do YOLOv8
             r = self.model(bgr, verbose=False)[0]
             kp = np.full((17, 3), np.nan)
             if r.keypoints is not None and len(r.keypoints.xy):
+                areas = (r.boxes.xywh[:, 2] * r.boxes.xywh[:, 3]).cpu().numpy()
+                j = int(np.argmax(areas))
                 h = bgr.shape[0]
-                xy = r.keypoints.xy[0].cpu().numpy()
-                cf = r.keypoints.conf[0].cpu().numpy() if r.keypoints.conf is not None else np.ones(17)
+                xy = r.keypoints.xy[j].cpu().numpy()
+                cf = r.keypoints.conf[j].cpu().numpy() if r.keypoints.conf is not None else np.ones(17)
                 kp[:, 0] = xy[:, 0] / h
                 kp[:, 1] = 1 - xy[:, 1] / h  # y para cima, normalizado pela altura
                 kp[:, 2] = cf
+                kp[cf < self.min_conf, :2] = np.nan
             frames.append(kp)
         return np.stack(frames), fps
 
@@ -125,9 +136,9 @@ def load_keypoints(path: str | Path) -> tuple[np.ndarray, float]:
     return np.asarray(d["keypoints"], dtype=float), float(d.get("fps", 15.0))
 
 
-def get_pose_estimator(backend: str = "mediapipe"):
+def get_pose_estimator(backend: str = "mediapipe", weights: str | None = None):
     if backend == "mediapipe":
         return MediaPipePoseEstimator()
     if backend == "yolo":
-        return YoloPoseEstimator()
+        return YoloPoseEstimator(weights or "yolov8m-pose.pt")
     raise ValueError(backend)
