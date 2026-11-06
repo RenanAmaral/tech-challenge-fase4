@@ -108,8 +108,9 @@ def render_overlay(video_path: str | Path, kp: np.ndarray, fps: float, path: str
                 cv2.circle(img, (int(q[0]), int(q[1])), 6, (255, 255, 255), -1, cv2.LINE_AA)
         lbl = LABEL.get(active[0].kind, active[0].kind).upper() if active else "OK"
         cv2.rectangle(img, (0, 0), (img.shape[1], 70), (30, 30, 30), -1)
-        cv2.putText(img, lbl, (16, 46), cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 3, cv2.LINE_AA)
-        cv2.putText(img, f"t = {i / fps:4.1f} s", (img.shape[1] - 190, 46), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+        cv2.putText(img, lbl, (16, 46), cv2.FONT_HERSHEY_SIMPLEX, 1.0, color, 3, cv2.LINE_AA)
+        cv2.rectangle(img, (0, height - 50), (190, height), (30, 30, 30), -1)
+        cv2.putText(img, f"t = {i / fps:4.1f} s", (14, height - 16), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
                     (230, 230, 230), 2, cv2.LINE_AA)
         vw.write(img)
     if vw is not None:

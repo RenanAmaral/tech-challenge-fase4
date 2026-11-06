@@ -47,6 +47,7 @@ class ExerciseReference:
     dtw_std: float
     n_reps: int
     asym_max: float = 0.0  # assimetria E/D da execução correta (em 2D, inclui o efeito do ângulo da câmera)
+    asym_std: float = 0.0  # variação dessa assimetria entre as repetições corretas
 
     def save(self, path: str | Path) -> None:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -61,6 +62,7 @@ class ExerciseReference:
 class Thresholds:
     rom_ratio_min: float = 0.70  # ROM < 70% da referência → raso
     asym_deg: float = 15.0
+    asym_sigma: float = 3.0
     valgus_cm: float = 4.0
     trunk_extra_deg: float = 20.0
     dtw_sigma: float = 4.0  # DTW > média + 4σ da referência → atípico
@@ -167,7 +169,8 @@ def build_reference(kp: np.ndarray, fps: float) -> ExerciseReference:
     trunk = [ang["trunk_lean"][s : e + 1].max() for s, e in reps]
     asym = [np.max(np.abs(ang["knee_l"][s : e + 1] - ang["knee_r"][s : e + 1])) for s, e in reps]
     return ExerciseReference(mean_curve.round(3).tolist(), float(np.mean(roms)), float(np.mean(trunk)),
-                             float(np.mean(dtws)), float(np.std(dtws)), len(reps), float(np.mean(asym)))
+                             float(np.mean(dtws)), float(np.std(dtws)), len(reps), float(np.mean(asym)),
+                             float(np.std(asym)))
 
 
 def _score(excess_ratio: float) -> float:
@@ -219,7 +222,9 @@ class ExerciseAnalyzer:
             if rom < th.rom_ratio_min * ref.rom:
                 devs.append(Deviation("shallow", i, s, e, _score((th.rom_ratio_min * ref.rom - rom) / (0.3 * ref.rom)),
                                       rom, f"≥ {th.rom_ratio_min * ref.rom:.0f}° de ROM", DEVIATION_TEXT["shallow"]))
-            asym_lim = ref.asym_max + th.asym_deg  # relativo à execução correta (ângulo de câmera em 2D)
+            # relativo à execução correta: em 2D o ângulo da câmera cria assimetria aparente, que
+            # varia entre repetições corretas; a tolerância acompanha essa variação (como no DTW)
+            asym_lim = ref.asym_max + max(th.asym_deg, th.asym_sigma * ref.asym_std)
             if asym > asym_lim:
                 devs.append(Deviation("asymmetric", i, s, e, _score((asym - asym_lim) / th.asym_deg), asym,
                                       f"≤ {asym_lim:.0f}° de diferença E/D", DEVIATION_TEXT["asymmetric"]))

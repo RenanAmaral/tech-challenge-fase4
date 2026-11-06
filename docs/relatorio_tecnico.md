@@ -254,6 +254,19 @@ A mesma voz saiu normal nas três consultas lidas normalmente e alterada só na 
 
 O vídeo real expôs dois ajustes, já incorporados: (1) em 2D, a câmera em diagonal faz uma perna parecer mais encurtada que a outra, e a assimetria medida chegou a 30–50° num movimento simétrico; por isso o limite de assimetria passou a ser relativo à referência (mesma câmera, mesmo posicionamento), como já eram a profundidade e o tronco; (2) o movimento de caminhar até o celular no fim da gravação virava uma "repetição" rasa; repetições na borda do vídeo com menos da metade da amplitude típica agora são descartadas. As métricas nos dados sintéticos não mudaram. O valgo dinâmico só é medido com pose 3D (MediaPipe).
 
+**Sessão real com erros propositais.** Com a câmera no mesmo lugar, o mesmo integrante gravou 6 agachamentos, fazendo o 2º e o 5º errados de propósito (mais rasos). O sistema segmentou as 6 repetições e marcou exatamente as duas:
+
+| Rep. | ROM do joelho | DTW vs. referência | Resultado |
+| --- | --- | --- | --- |
+| 1 | 71° | 8,3 | Dentro do padrão |
+| **2** | **58°** | **17,9** | **Padrão atípico** (limite DTW 10,2) |
+| 3 | 74° | 7,5 | Dentro do padrão |
+| 4 | 76° | 5,7 | Dentro do padrão |
+| **5** | **47°** | **26,6** | **Amplitude reduzida** (limite 54°) e assimetria |
+| 6 | 73° | 6,2 | Dentro do padrão |
+
+Na primeira execução, as repetições 1, 3 e 6, corretas, também foram marcadas com assimetria, por pouco (58° a 61° contra o limite de 57°). Na referência, a assimetria aparente em 2D já variava de 30° a 50° entre repetições corretas (desvio-padrão de 8°), então um limite fixo de 15° acima da média era apertado demais. A tolerância passou a ser a média da referência mais o maior valor entre 15° e 3 desvios-padrão, o mesmo raciocínio já usado no DTW. Com isso, só as repetições erradas foram marcadas, e as métricas sintéticas não mudaram (nos dados sintéticos o desvio-padrão é 0,4°, então vale o piso de 15°). O ajuste foi motivado por esse teste e validado num único falante; com mais gravações, o limite deveria ser recalibrado.
+
 ## 7. Limitações, ética e LGPD
 
 - **Apoio, não substituição.** Os alertas trazem as evidências que os geraram (valores, termos, features) para que o profissional decida.
