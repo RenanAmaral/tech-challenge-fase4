@@ -13,3 +13,4 @@ models/*.pt
 models/*.task
 data/real/*
 !data/real/LEIA-ME.md
+models/squat_reference_real.json

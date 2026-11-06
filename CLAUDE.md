@@ -81,7 +81,7 @@ Python 3.10–3.12 recomendado (MediaPipe ainda não tem wheel para versões mai
 
 - [x] Whisper instalado e rodando na máquina local.
 - [ ] Testar `scripts/analyze_audio.py --transcriber whisper` com uma gravação de voz real (consulta simulada lida em voz alta, com termos como "falta de ar", "não tenho febre").
-- [ ] Testar `scripts/analyze_video.py fisio` com um vídeo do celular (precisa do MediaPipe; Python ≤ 3.12).
+- [ ] Testar `scripts/analyze_video.py fisio` com um vídeo do celular (precisa do MediaPipe; Python ≤ 3.12). Fluxo: `referencia` com o vídeo correto (grava `models/squat_reference_real.json`, fora do Git, sem alterar a referência sintética da demo) e depois `fisio` com a sessão.
 - [ ] Gravar vídeos de exercício (correto e incorreto) e consultas simuladas com consentimento do grupo.
 - [ ] YOLOv8 de cirurgia: precisa de pesos com fine-tuning em instrumental (m2cai16-tool, Cholec80 ou dataset rotulado no Roboflow) em `models/surgical_yolov8n.pt`. Sem isso, a demo usa detecções simuladas.
 - [ ] Opcional: validar sinais vitais em dados reais com `scripts/download_physionet.py --records 1 2 3 --inject desaturation`.
