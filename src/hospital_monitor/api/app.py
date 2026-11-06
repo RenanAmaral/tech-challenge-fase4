@@ -87,15 +87,17 @@ def create_app(outputs_dir: str | Path | None = None) -> FastAPI:
     @app.post("/analyze/audio")
     async def analyze_audio(patient_id: str = Form(...), audio: UploadFile = File(...),
                             transcript: str | None = Form(None), timestamp: datetime | None = Form(None)):
-        if "audio" not in state:
-            state["audio"] = services.make_audio_pipeline("auto")
+        # transcrição enviada pelo cliente tem prioridade sobre o Whisper
+        key = "audio_sidecar" if transcript else "audio"
+        if key not in state:
+            state[key] = services.make_audio_pipeline("sidecar" if transcript else "auto")
         with tempfile.TemporaryDirectory() as td:
             p = Path(td) / (audio.filename or "consulta.wav")
             p.write_bytes(await audio.read())
             if transcript:
                 p.with_suffix(".txt").write_text(transcript, encoding="utf-8")
             ts = timestamp or datetime.now(timezone.utc)
-            res = state["audio"].analyze(p, patient_id, ts)
+            res = state[key].analyze(p, patient_id, ts)
         d = res.to_dict()
         d["new_alerts"] = _publish(res.events)
         return d

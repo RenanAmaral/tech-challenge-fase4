@@ -57,7 +57,7 @@ src/hospital_monitor/
 └── orchestrator.py · services.py · evaluation.py
 scripts/        run_demo.py · evaluate.py · train_models.py · analyze_video.py · analyze_audio.py · download_physionet.py
 dashboard/      app.py (Streamlit)
-tests/          31 testes (pytest)
+tests/          32 testes (pytest)
 docs/           relatorio_tecnico.md · roteiro_video.md
 ```
 

@@ -53,7 +53,7 @@ pip install -r requirements.txt
 pip install -e .
 python scripts/run_demo.py                 # ~2 min; saídas em outputs/
 python scripts/run_demo.py --realtime 1 --skip-eval   # para gravar o vídeo
-pytest -q                                  # 31 testes
+pytest -q                                  # 32 testes
 streamlit run dashboard/app.py             # painel em http://localhost:8501
 uvicorn hospital_monitor.api.app:app --reload   # API em http://localhost:8000/docs
 pip install -r requirements-ml.txt         # opcional: Whisper, YOLOv8, MediaPipe, pysentimiento
@@ -63,7 +63,10 @@ Python 3.10–3.12 recomendado (MediaPipe ainda não tem wheel para versões mai
 
 ## Whisper no Windows (problema conhecido)
 
-- Sintoma: `WhisperModel(...)` dá *segfault* (violação de acesso) com ctranslate2 4.8.x, em qualquer modelo ou `compute_type`. Com o torch instalado (vem do pysentimiento), aparece `WinError 126` ao carregar `shm.dll`.
+- **Resolvido na máquina do usuário** (05/11/2026): VC++ Redistributable instalado, ctranslate2 4.8.5, `av<16` (o faster-whisper 1.2.x quebra com PyAV 16+; já fixado no `requirements-ml.txt`).
+- Áudio **sintético** (demo) não tem fala real: o Whisper devolve sílabas sem sentido. Por isso `run_demo.py` usa sempre `sidecar`, e a API usa sidecar quando o cliente envia `transcript`. Teste o Whisper só com gravação de voz real.
+- `HM_TRANSCRIBER` só vale quando o chamador pede `auto`; escolha explícita é respeitada.
+- Sintoma original: `WhisperModel(...)` dá *segfault* (violação de acesso) com ctranslate2 4.8.x, em qualquer modelo ou `compute_type`. Com o torch instalado (vem do pysentimiento), aparece `WinError 126` ao carregar `shm.dll`.
 - Causa mais provável: falta o **Microsoft Visual C++ Redistributable 2015–2022 (x64)**. Correção: `winget install Microsoft.VCRedist.2015+.x64` (pedir ao usuário; é instalação no sistema) e reiniciar o terminal.
 - Se persistir com o torch carregado: `$env:KMP_DUPLICATE_LIB_OK="TRUE"` (conflito de OpenMP entre torch e ctranslate2) ou testar o Whisper num venv sem o pysentimiento.
 - O modo `auto` testa o Whisper num subprocesso (`audio/transcribe.py: whisper_works`) e cai para o `.txt` se ele quebrar. Para forçar: `$env:HM_TRANSCRIBER="sidecar"`.
@@ -76,7 +79,9 @@ Python 3.10–3.12 recomendado (MediaPipe ainda não tem wheel para versões mai
 
 ## O que ainda falta / próximos passos
 
-- [ ] Rodar com os modelos reais na máquina local (`requirements-ml.txt`): testar `scripts/analyze_audio.py` com um áudio gravado e `scripts/analyze_video.py fisio` com um vídeo do celular.
+- [x] Whisper instalado e rodando na máquina local.
+- [ ] Testar `scripts/analyze_audio.py --transcriber whisper` com uma gravação de voz real (consulta simulada lida em voz alta, com termos como "falta de ar", "não tenho febre").
+- [ ] Testar `scripts/analyze_video.py fisio` com um vídeo do celular (precisa do MediaPipe; Python ≤ 3.12).
 - [ ] Gravar vídeos de exercício (correto e incorreto) e consultas simuladas com consentimento do grupo.
 - [ ] YOLOv8 de cirurgia: precisa de pesos com fine-tuning em instrumental (m2cai16-tool, Cholec80 ou dataset rotulado no Roboflow) em `models/surgical_yolov8n.pt`. Sem isso, a demo usa detecções simuladas.
 - [ ] Opcional: validar sinais vitais em dados reais com `scripts/download_physionet.py --records 1 2 3 --inject desaturation`.

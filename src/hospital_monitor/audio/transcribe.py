@@ -95,11 +95,14 @@ class WhisperTranscriber:  # pragma: no cover - exige download do modelo
 def get_transcriber(backend: str = "auto", model_size: str = "small") -> Transcriber:
     """``auto``: usa Whisper se ele passar no teste em subprocesso; senão, sidecar.
 
-    A variável de ambiente ``HM_TRANSCRIBER`` (auto | whisper | sidecar) tem prioridade.
+    A variável de ambiente ``HM_TRANSCRIBER`` (auto | whisper | sidecar) só vale
+    quando o chamador pede ``auto``; uma escolha explícita (ex.: a demo, que usa
+    ``sidecar`` porque o áudio sintético não tem fala real) sempre é respeitada.
     """
     import os
 
-    backend = os.getenv("HM_TRANSCRIBER", backend)
+    if backend == "auto":
+        backend = os.getenv("HM_TRANSCRIBER", "auto")
     if backend == "auto":
         try:
             import faster_whisper  # noqa: F401

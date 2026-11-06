@@ -140,7 +140,8 @@ def run_surgery(out: Path):
 
 
 def run_audio(out: Path):
-    pipe = services.make_audio_pipeline("auto")
+    # áudio sintético não tem fala real: a transcrição vem sempre do .txt de referência
+    pipe = services.make_audio_pipeline("sidecar")
     results, events = {}, []
     for pid, cond, t, seed in [("P003", "dysarthria", at(10, 5), 41), ("P002", "normal", at(10, 30), 42),
                                ("P001", "dyspnea", at(14, 20), 43)]:

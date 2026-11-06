@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ml = ["faster-whisper>=1.0", "ultralytics>=8.1", "mediapipe>=0.10.14", "pysentimiento>=0.7", "redis>=5"]
+ml = ["faster-whisper>=1.0", "av<16", "ultralytics>=8.1", "mediapipe>=0.10.14", "pysentimiento>=0.7", "redis>=5"]
 dev = ["pytest>=8", "httpx", "ruff"]
 
 [tool.setuptools.packages.find]

@@ -68,3 +68,10 @@ def test_auto_falls_back_without_whisper(monkeypatch):
     monkeypatch.delenv("HM_TRANSCRIBER", raising=False)
     monkeypatch.setattr(transcribe, "whisper_works", lambda *a, **k: False)
     assert isinstance(transcribe.get_transcriber("auto"), transcribe.SidecarTranscriber)
+
+
+def test_explicit_backend_ignores_env(monkeypatch):
+    from hospital_monitor.audio import transcribe
+
+    monkeypatch.setenv("HM_TRANSCRIBER", "whisper")
+    assert isinstance(transcribe.get_transcriber("sidecar"), transcribe.SidecarTranscriber)
