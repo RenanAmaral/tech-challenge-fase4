@@ -68,9 +68,27 @@ FEATURE_NAMES = [
 
 
 def load_audio(path: str | Path, sr: int = 16000) -> np.ndarray:
-    """Lê WAV/FLAC/OGG em mono float32 no ``sr`` pedido."""
+    """Lê áudio em mono float32 no ``sr`` pedido.
+
+    WAV/FLAC/OGG são lidos direto; outros formatos (MP4/M4A/OPUS do WhatsApp,
+    MP3) são convertidos com ffmpeg, se instalado.
+    """
     import soundfile as sf
 
+    path = Path(path)
+    if path.suffix.lower() not in (".wav", ".flac", ".ogg"):
+        import shutil
+        import subprocess
+        import tempfile
+
+        if not shutil.which("ffmpeg"):
+            raise RuntimeError(f"{path.name}: instale o ffmpeg ou converta para WAV "
+                               f"(ffmpeg -i {path.name} -ac 1 -ar {sr} saida.wav)")
+        with tempfile.TemporaryDirectory() as td:
+            wav = Path(td) / "a.wav"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(path), "-vn", "-ac", "1", "-ar", str(sr),
+                            str(wav)], check=True)
+            return load_audio(wav, sr)
     y, file_sr = sf.read(str(path), dtype="float32", always_2d=False)
     if y.ndim > 1:
         y = y.mean(axis=1)

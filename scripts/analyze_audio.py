@@ -1,8 +1,11 @@
-"""Analisa uma gravação REAL de consulta (WAV/FLAC/OGG).
+"""Analisa uma gravação REAL de consulta (WAV/FLAC/OGG; MP4/M4A/OPUS do WhatsApp com ffmpeg).
 
     python scripts/analyze_audio.py consulta.wav --patient P010
     python scripts/analyze_audio.py consulta.wav --patient P010 --transcriber sidecar   # usa consulta.txt
     python scripts/analyze_audio.py consulta.wav --patient P010 --full                  # JSON completo no console
+
+Se existir ``models/voice_baseline_<paciente>.json`` (criado por
+``scripts/voice_baseline.py``), a voz é comparada com o baseline do próprio paciente.
 
 Com ``faster-whisper`` instalado (requirements-ml.txt) a transcrição é feita
 localmente; sem ele, coloque a transcrição em ``consulta.txt`` (UTF-8) ao lado
@@ -71,7 +74,13 @@ def main() -> None:
     ap.add_argument("--transcriber", choices=["auto", "whisper", "sidecar"], default="auto")
     ap.add_argument("--full", action="store_true", help="imprime o JSON completo em vez do resumo")
     args = ap.parse_args()
-    res = services.make_audio_pipeline(args.transcriber).analyze(args.audio, args.patient, datetime.now(timezone.utc))
+    pipe = services.make_audio_pipeline(args.transcriber, patient_id=args.patient)
+    ref = pipe.voice.reference
+    print(f"Referência de voz: {ref.source} (n={ref.n})")
+    if ref.source.startswith("synthetic"):
+        print("  aviso: perfil sintético. Para voz real, grave um baseline do paciente com "
+              "scripts/voice_baseline.py; sem isso, a análise de voz tende a dar falso positivo.\n")
+    res = pipe.analyze(args.audio, args.patient, datetime.now(timezone.utc))
     d = res.to_dict()
     out = ROOT / "outputs" / "real" / f"audio_{args.patient}.json"
     out.parent.mkdir(parents=True, exist_ok=True)

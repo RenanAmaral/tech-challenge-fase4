@@ -75,3 +75,19 @@ def test_explicit_backend_ignores_env(monkeypatch):
 
     monkeypatch.setenv("HM_TRANSCRIBER", "whisper")
     assert isinstance(transcribe.get_transcriber("sidecar"), transcribe.SidecarTranscriber)
+
+
+def test_patient_baseline_removes_false_positive(tmp_path, monkeypatch):
+    """Voz 'real' fora do perfil sintético: com baseline do próprio falante, volta a ser normal."""
+    from hospital_monitor import services
+
+    monkeypatch.setattr(services, "MODELS", tmp_path)
+    monkeypatch.setattr(services, "ensure_models", lambda: None)  # não treinar em tmp
+    falante = [extract_features(syn.synthesize_voice("normal", seed=900 + i, speaker_variation=True)) for i in range(4)]
+    ref = ReferenceProfile.from_features(falante, source="baseline real do paciente X")
+    ref.save(services.voice_baseline_path("X"))
+    (tmp_path / "voice_reference.json").write_text("{}")
+    pipe = services.make_audio_pipeline("sidecar", patient_id="X")
+    assert pipe.voice.model is None and pipe.voice.reference.source.startswith("baseline")
+    nova = extract_features(syn.synthesize_voice("normal", seed=950, speaker_variation=True))
+    assert pipe.voice.assess(nova).main_condition is None

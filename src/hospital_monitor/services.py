@@ -91,10 +91,23 @@ def ensure_models(force: bool = False) -> dict:
     return info
 
 
-def make_audio_pipeline(transcriber_backend: str = "auto") -> AudioPipeline:
+def voice_baseline_path(patient_id: str) -> Path:
+    return MODELS / f"voice_baseline_{patient_id}.json"
+
+
+def make_audio_pipeline(transcriber_backend: str = "auto", patient_id: str | None = None) -> AudioPipeline:
+    """Pipeline de áudio. Se houver baseline de voz do paciente, ele vira a referência.
+
+    Com baseline real, o Random Forest (treinado em vozes sintéticas) é desligado:
+    ele não generaliza para voz humana e só confundiria o resultado.
+    """
     ensure_models()
-    ref = ReferenceProfile.load(MODELS / "voice_reference.json")
-    return AudioPipeline(get_transcriber(transcriber_backend), VoiceAnalyzer(ref, MODELS / "voice_rf.joblib"))
+    base = voice_baseline_path(patient_id) if patient_id else None
+    if base and base.exists():
+        analyzer = VoiceAnalyzer(ReferenceProfile.load(base), model_path=None)
+    else:
+        analyzer = VoiceAnalyzer(ReferenceProfile.load(MODELS / "voice_reference.json"), MODELS / "voice_rf.joblib")
+    return AudioPipeline(get_transcriber(transcriber_backend), analyzer)
 
 
 def make_exercise_analyzer() -> ExerciseAnalyzer:

@@ -6,11 +6,14 @@ Duas camadas complementares:
    contra um perfil de referência (falantes saudáveis ou o baseline do próprio
    paciente). Cada condição soma os desvios na direção clinicamente esperada
    (ex.: disartria ↑jitter, ↑shimmer, ↓HNR, ↑irregularidade de ritmo).
-2. **Classificador supervisionado (opcional)** — Random Forest sobre as mesmas
-   features, treinado com ``scripts/train_voice_model.py``. Usado para o
-   diagnóstico diferencial quando há um modelo salvo em ``models/``.
+2. **Classificador supervisionado (opcional, informativo)** — Random Forest
+   sobre as mesmas features, treinado com ``scripts/train_models.py``. Só
+   atenua o alerta quando confia em voz normal; não decide a condição.
 
-O escore de anomalia do evento é o maior escore de desvio entre as condições.
+A condição e o escore do evento vêm do maior escore de desvio. Para voz real,
+a referência deve ser o **baseline do próprio paciente** (``scripts/voice_baseline.py``):
+vozes humanas variam muito mais que as sintéticas, e o canal de gravação
+(ex.: compressão do WhatsApp) altera jitter e shimmer.
 """
 
 from __future__ import annotations
@@ -134,13 +137,12 @@ class VoiceAnalyzer:
         if self.model is not None:
             p = self.model.predict_proba(feats.vector(FEATURE_NAMES).reshape(1, -1))[0]
             probs = {c: round(float(pi), 3) for c, pi in zip(self.model.classes_, p)}
+        # a condição e o escore vêm do mesmo critério explicável (desvio do perfil);
+        # o classificador é só informativo e pode atenuar quando confia em voz normal
         main = max(scores, key=scores.get)
-        if probs:  # diferencial pelo classificador quando disponível
-            best = max(probs, key=probs.get)
-            main = best if best != "normal" else main
-        anomaly = max(scores.values())
+        anomaly = scores[main]
         if probs and probs.get("normal", 0) > 0.8:
-            anomaly *= 0.5  # classificador confiante em voz normal atenua o alerta
+            anomaly *= 0.5
         if anomaly < self.threshold:
             main = None
         else:

@@ -235,6 +235,10 @@ A validação clínica exigiria:
 
 Em dados reais, esperamos acurácia de voz bem abaixo de 100%, porque disartria e fadiga se sobrepõem. Também esperamos mais falsos alarmes em sinais vitais, por causa de artefatos de sensor.
 
+**Primeiro teste com voz real.** Uma gravação de 13 s de um integrante do grupo, falando normalmente e enviada pelo WhatsApp, foi comparada com o perfil sintético de vozes saudáveis e saiu como **falso positivo**: disartria com escore 0,73. A variação de entonação foi de 3,7 semitons (z = +10,6) e o jitter de 2,8% (z = +6,6), muito acima das vozes sintéticas. Isso acontece porque a voz humana varia bem mais que a sintética, e a compressão do WhatsApp aumenta jitter e shimmer. O Random Forest, treinado só com vozes sintéticas, também errou (fadiga, 0,52).
+
+A correção seguiu o que a arquitetura já previa: comparar o paciente com **o próprio baseline**, gravado pelo mesmo canal (`scripts/voice_baseline.py`). Com um baseline tirado da primeira metade da gravação, a segunda metade saiu normal (escore 0,03), e uma voz com dispneia continuou sendo detectada contra esse mesmo baseline (escore 0,82). Com baseline real, o Random Forest é desligado, porque não generaliza para voz humana. A condição e o escore passaram a vir sempre do mesmo critério explicável (desvio do baseline); antes, o classificador podia escolher a condição e o desvio, o escore.
+
 ## 7. Limitações, ética e LGPD
 
 - **Apoio, não substituição.** Os alertas trazem as evidências que os geraram (valores, termos, features) para que o profissional decida.
@@ -246,7 +250,7 @@ Em dados reais, esperamos acurácia de voz bem abaixo de 100%, porque disartria 
 ## 8. Trabalhos futuros
 
 - Integração com prontuário via HL7 FHIR (Observation, MedicationRequest, Flag).
-- Baseline de voz por paciente na admissão.
+- Baseline de voz gravado na admissão de cada paciente (o mecanismo já existe: `scripts/voice_baseline.py`; falta o fluxo de coleta).
 - LLM local (Ollama) para resumir o alerta em linguagem natural.
 - Calibração dos pesos da fusão com dados rotulados (regressão logística sobre os escores).
 - Fine-tuning do YOLOv8 em instrumental cirúrgico.
