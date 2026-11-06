@@ -239,6 +239,17 @@ Em dados reais, esperamos acurácia de voz bem abaixo de 100%, porque disartria 
 
 A correção seguiu o que a arquitetura já previa: comparar o paciente com **o próprio baseline**, gravado pelo mesmo canal (`scripts/voice_baseline.py`). Com um baseline tirado da primeira metade da gravação, a segunda metade saiu normal (escore 0,03), e uma voz com dispneia continuou sendo detectada contra esse mesmo baseline (escore 0,82). Com baseline real, o Random Forest é desligado, porque não generaliza para voz humana. A condição e o escore passaram a vir sempre do mesmo critério explicável (desvio do baseline); antes, o classificador podia escolher a condição e o desvio, o escore.
 
+**Consultas simuladas com voz real.** Um integrante gravou pelo WhatsApp três textos neutros (16 a 18 s cada) para o baseline e quatro consultas simuladas. O baseline ficou estável: jitter de 2,70% a 2,82%, shimmer de 9,9% a 11,3% e HNR de 12,7 a 13,3 dB nas três gravações. Nas consultas, a transcrição usada foi o texto lido (a validação do Whisper com esses áudios foi feita na máquina local).
+
+| Consulta | Como foi lida | Voz (vs. baseline) | Texto | Eventos |
+| --- | --- | --- | --- | --- |
+| A — paciente bem | Normal | Sem alteração (0,25) | Escore 0; falta de ar e dor no peito negadas; sentimento positivo | Nenhum |
+| B — falta de ar | **Simulando falta de ar** | **Dispneia (0,67)**: sílabas por frase z = −3,3; proporção de pausas z = +3,5 | Falta de ar e dor torácica afirmadas; febre e tosse negadas | Voz (atenção) + relato (crítico) |
+| C — sinais de AVC | Normal | Sem alteração (0,01) | Fala enrolada, fraqueza no braço e rosto dormente; febre e cefaleia negadas | Relato (crítico) |
+| D — negação com "mas" | Normal | Sem alteração (0,19) | Síncope afirmada após "não tenho tontura, mas…"; tontura e dor no peito negadas | Relato (crítico) |
+
+A mesma voz saiu normal nas três consultas lidas normalmente e alterada só na consulta em que a falta de ar foi simulada, pelos marcadores esperados (frases mais curtas e mais pausas). O NLP acertou todas as afirmações e negações. Uma limitação apareceu: o sentimento por léxico classificou a consulta D como positiva, porque leu "sem dor no peito" como algo bom; o pysentimiento (opcional) trata melhor esse caso. Com n = 1 falante e 3 gravações de baseline, isso demonstra o funcionamento, não a acurácia.
+
 ## 7. Limitações, ética e LGPD
 
 - **Apoio, não substituição.** Os alertas trazem as evidências que os geraram (valores, termos, features) para que o profissional decida.
