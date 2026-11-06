@@ -53,13 +53,22 @@ pip install -r requirements.txt
 pip install -e .
 python scripts/run_demo.py                 # ~2 min; saídas em outputs/
 python scripts/run_demo.py --realtime 1 --skip-eval   # para gravar o vídeo
-pytest -q                                  # 29 testes
+pytest -q                                  # 31 testes
 streamlit run dashboard/app.py             # painel em http://localhost:8501
 uvicorn hospital_monitor.api.app:app --reload   # API em http://localhost:8000/docs
 pip install -r requirements-ml.txt         # opcional: Whisper, YOLOv8, MediaPipe, pysentimiento
 ```
 
 Python 3.10–3.12 recomendado (MediaPipe ainda não tem wheel para versões mais novas). Se o `Activate.ps1` for bloqueado: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+
+## Whisper no Windows (problema conhecido)
+
+- Sintoma: `WhisperModel(...)` dá *segfault* (violação de acesso) com ctranslate2 4.8.x, em qualquer modelo ou `compute_type`. Com o torch instalado (vem do pysentimiento), aparece `WinError 126` ao carregar `shm.dll`.
+- Causa mais provável: falta o **Microsoft Visual C++ Redistributable 2015–2022 (x64)**. Correção: `winget install Microsoft.VCRedist.2015+.x64` (pedir ao usuário; é instalação no sistema) e reiniciar o terminal.
+- Se persistir com o torch carregado: `$env:KMP_DUPLICATE_LIB_OK="TRUE"` (conflito de OpenMP entre torch e ctranslate2) ou testar o Whisper num venv sem o pysentimiento.
+- O modo `auto` testa o Whisper num subprocesso (`audio/transcribe.py: whisper_works`) e cai para o `.txt` se ele quebrar. Para forçar: `$env:HM_TRANSCRIBER="sidecar"`.
+- O Whisper é opcional para a entrega: o pipeline de voz e NLP funciona com a transcrição do `.txt` (UTF-8; o leitor aceita BOM e cp1252).
+- `scripts/analyze_audio.py` imprime um resumo (use `--full` para o JSON) e grava o JSON completo em `outputs/real/audio_<paciente>.json`. Ele força UTF-8 no console; em outros scripts, use `$env:PYTHONUTF8="1"`.
 
 ## Resultados de referência (da demo atual)
 

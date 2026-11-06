@@ -50,3 +50,21 @@ def test_pipeline_end_to_end(tmp_path, t0):
     kinds = {e.kind for e in res.events}
     assert kinds == {"voz_disartria", "relato_sintomas"}
     assert "disartria" in res.text.critical_terms
+
+
+def test_sidecar_reads_bom_and_cp1252(tmp_path):
+    from hospital_monitor.audio.transcribe import SidecarTranscriber
+
+    (tmp_path / "a.txt").write_bytes("﻿Estou com cansaço.".encode("utf-8"))
+    (tmp_path / "b.txt").write_bytes("Estou com cansaço.".encode("cp1252"))
+    t = SidecarTranscriber()
+    assert t.transcribe(tmp_path / "a.wav").text == "Estou com cansaço."
+    assert t.transcribe(tmp_path / "b.wav").text == "Estou com cansaço."
+
+
+def test_auto_falls_back_without_whisper(monkeypatch):
+    from hospital_monitor.audio import transcribe
+
+    monkeypatch.delenv("HM_TRANSCRIBER", raising=False)
+    monkeypatch.setattr(transcribe, "whisper_works", lambda *a, **k: False)
+    assert isinstance(transcribe.get_transcriber("auto"), transcribe.SidecarTranscriber)
