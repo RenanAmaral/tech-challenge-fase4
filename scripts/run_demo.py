@@ -164,6 +164,20 @@ def run_audio(out: Path):
     return results, events
 
 
+# o que a demo gera; outputs/real (análises reais) e outputs/api (API) nunca são apagados
+DEMO_DIRS = ("data", "video", "audio", "figuras")
+DEMO_FILES = ("alerts.json", "alerts.jsonl", "events.jsonl", "assessments.jsonl", "metrics.json",
+              "relatorio_demo.html")
+
+
+def clean_demo_outputs(out: Path) -> None:
+    """Apaga só as saídas da execução anterior da demo, para não acumular alertas repetidos."""
+    for d in DEMO_DIRS:
+        shutil.rmtree(out / d, ignore_errors=True)
+    for f in DEMO_FILES:
+        (out / f).unlink(missing_ok=True)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(ROOT / "outputs"))
@@ -174,8 +188,7 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     out = Path(args.out)
-    if out.exists():
-        shutil.rmtree(out)
+    clean_demo_outputs(out)
     for d in ("data", "video", "audio", "figuras"):
         (out / d).mkdir(parents=True, exist_ok=True)
 
