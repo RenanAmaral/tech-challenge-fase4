@@ -1,6 +1,6 @@
 {
  "patient_id": "P002",
- "audio_path": "data/audio/consulta_P002.wav",
+ "audio_path": "data\\audio\\consulta_P002.wav",
  "transcript": {
   "text": "Bom dia, doutor. Estou me sentindo bem melhor hoje. Não tenho dor no peito nem falta de ar. Dormi bem e consegui caminhar no corredor com a fisioterapeuta. Estou animado para ir para casa.",
   "backend": "sidecar",
@@ -78,8 +78,13 @@
   "medications": [],
   "sentiment": {
    "label": "POS",
-   "compound": 0.929,
-   "backend": "lexicon"
+   "compound": 0.94,
+   "probas": {
+    "NEG": 0.01,
+    "NEU": 0.041,
+    "POS": 0.95
+   },
+   "backend": "pysentimiento"
   },
   "critical_terms": [],
   "anomaly_score": 0.0

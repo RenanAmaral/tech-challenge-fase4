@@ -68,6 +68,7 @@ Os modelos pré-treinados (Whisper, YOLOv8, MediaPipe, pysentimiento) são opcio
 | Assimetria | \|joelho E − joelho D\| > 15° | Descarga de peso desigual |
 | Valgo dinâmico | Joelho > 4 cm medial | Risco de lesão ligamentar |
 | Inclinação do tronco | > referência + 20° | Compensação |
+| Perda de equilíbrio | Um pé se desloca > max(15% da perna, referência + 3σ) durante a repetição | Passo para se reequilibrar (pisar em falso); risco de queda |
 | Padrão atípico | DTW > média + 4σ | Movimento diferente do esperado |
 | Queda | Centro de massa cai > 0,30 m em 1 s e o corpo fica horizontal | Evento sentinela |
 
@@ -259,13 +260,17 @@ O vídeo real expôs dois ajustes, já incorporados: (1) em 2D, a câmera em dia
 | Rep. | ROM do joelho | DTW vs. referência | Resultado |
 | --- | --- | --- | --- |
 | 1 | 71° | 8,3 | Dentro do padrão |
-| **2** | **58°** | **17,9** | **Padrão atípico** (limite DTW 10,2) |
+| **2** | **58°** | **17,9** | **Padrão atípico** (limite DTW 10,2); depois do ajuste abaixo, **perda de equilíbrio** (pé deslocou 37% da perna; limite 15%) |
 | 3 | 74° | 7,5 | Dentro do padrão |
 | 4 | 76° | 5,7 | Dentro do padrão |
-| **5** | **47°** | **26,6** | **Amplitude reduzida** (limite 54°) e assimetria |
+| **5** | **47°** | **26,6** | **Amplitude reduzida** (limite 54°) e assimetria; depois do ajuste, também perda de equilíbrio (18%) |
 | 6 | 73° | 6,2 | Dentro do padrão |
 
 Na primeira execução, as repetições 1, 3 e 6, corretas, também foram marcadas com assimetria, por pouco (58° a 61° contra o limite de 57°). Na referência, a assimetria aparente em 2D já variava de 30° a 50° entre repetições corretas (desvio-padrão de 8°), então um limite fixo de 15° acima da média era apertado demais. A tolerância passou a ser a média da referência mais o maior valor entre 15° e 3 desvios-padrão, o mesmo raciocínio já usado no DTW. Com isso, só as repetições erradas foram marcadas, e as métricas sintéticas não mudaram (nos dados sintéticos o desvio-padrão é 0,4°, então vale o piso de 15°). O ajuste foi motivado por esse teste e validado num único falante; com mais gravações, o limite deveria ser recalibrado.
+
+Revendo o vídeo, o erro da 2ª repetição não foi só amplitude: o integrante pisou em falso, o corpo pendeu para o lado e um pé saiu do lugar para recuperar o equilíbrio. Os ângulos do joelho não capturam isso de forma específica, então o analisador passou a medir o **deslocamento dos tornozelos** durante cada repetição, em fração do comprimento da perna (independe da distância da câmera). Num agachamento os pés ficam parados: nas repetições corretas da referência o deslocamento foi de 4% a 8% (ruído da pose), nas corretas da sessão 7%, e na 2ª repetição 37%. O limite é o maior entre 15% e a média da referência mais 3 desvios-padrão. O desvio é de atenção (escore 0,50–0,75), não crítico: perder o equilíbrio aumenta o risco de queda, mas não é uma queda.
+
+O mesmo teste revelou uma fragilidade na construção da referência. Ao regravá-la, um movimento parcial no fim do vídeo (caminhar até o celular, amplitude de 40°) entrou como 7ª repetição, porque ficou logo acima do corte de metade da amplitude típica. Isso inflou a variação do DTW na referência e subiu o limite de "padrão atípico" de 10° para 35°, o que deixou a 2ª repetição passar como normal. A referência agora só aceita repetições completas (amplitude ≥ 70% da mediana, o mesmo critério do desvio de amplitude reduzida). Com as duas mudanças, as métricas nos dados sintéticos não mudaram.
 
 ## 7. Limitações, ética e LGPD
 

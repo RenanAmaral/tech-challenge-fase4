@@ -71,7 +71,8 @@ def load_audio(path: str | Path, sr: int = 16000) -> np.ndarray:
     """Lê áudio em mono float32 no ``sr`` pedido.
 
     WAV/FLAC/OGG são lidos direto; outros formatos (MP4/M4A/OPUS do WhatsApp,
-    MP3) são convertidos com ffmpeg, se instalado.
+    MP3) são convertidos com o ffmpeg do PATH ou, sem ele, com o PyAV
+    (vem com o faster-whisper e já traz o ffmpeg embutido).
     """
     import soundfile as sf
 
@@ -82,8 +83,11 @@ def load_audio(path: str | Path, sr: int = 16000) -> np.ndarray:
         import tempfile
 
         if not shutil.which("ffmpeg"):
-            raise RuntimeError(f"{path.name}: instale o ffmpeg ou converta para WAV "
-                               f"(ffmpeg -i {path.name} -ac 1 -ar {sr} saida.wav)")
+            try:
+                return _decode_pyav(path, sr)
+            except ImportError:
+                raise RuntimeError(f"{path.name}: instale o ffmpeg (ou o pacote 'av') ou converta para WAV "
+                                   f"(ffmpeg -i {path.name} -ac 1 -ar {sr} saida.wav)") from None
         with tempfile.TemporaryDirectory() as td:
             wav = Path(td) / "a.wav"
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(path), "-vn", "-ac", "1", "-ar", str(sr),
@@ -95,6 +99,21 @@ def load_audio(path: str | Path, sr: int = 16000) -> np.ndarray:
     if file_sr != sr:
         y = signal.resample_poly(y, sr, file_sr).astype(np.float32)
     return y
+
+
+def _decode_pyav(path: Path, sr: int) -> np.ndarray:
+    """Decodifica qualquer formato suportado pelo ffmpeg via PyAV (mono float32, ``sr``)."""
+    import av
+
+    parts = []
+    with av.open(str(path)) as container:
+        resampler = av.AudioResampler(format="flt", layout="mono", rate=sr)
+        for frame in container.decode(audio=0):
+            parts += [f.to_ndarray().reshape(-1) for f in resampler.resample(frame)]
+        parts += [f.to_ndarray().reshape(-1) for f in resampler.resample(None)]
+    if not parts:
+        raise RuntimeError(f"{path.name}: nenhuma faixa de áudio encontrada")
+    return np.concatenate(parts).astype(np.float32)
 
 
 def _frame_db(y: np.ndarray, sr: int) -> np.ndarray:

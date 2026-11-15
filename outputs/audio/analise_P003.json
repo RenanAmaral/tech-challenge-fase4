@@ -1,6 +1,6 @@
 {
  "patient_id": "P003",
- "audio_path": "data/audio/consulta_P003.wav",
+ "audio_path": "data\\audio\\consulta_P003.wav",
  "transcript": {
   "text": "Minha esposa disse que minha fala está enrolada desde ontem à noite. Sinto uma fraqueza no braço direito e o rosto meio dormente. Não tenho febre nem dor de cabeça.",
   "backend": "sidecar",
@@ -112,9 +112,14 @@
   ],
   "medications": [],
   "sentiment": {
-   "label": "NEG",
-   "compound": -0.167,
-   "backend": "lexicon"
+   "label": "NEU",
+   "compound": -0.271,
+   "probas": {
+    "NEG": 0.297,
+    "NEU": 0.677,
+    "POS": 0.026
+   },
+   "backend": "pysentimiento"
   },
   "critical_terms": [
    "disartria",
@@ -143,7 +148,7 @@
      "hnr_db: z=-5.4",
      "syllable_rate: z=-2.4"
     ],
-    "audio": "data/audio/consulta_P003.wav",
+    "audio": "data\\audio\\consulta_P003.wav",
     "classifier_probs": {
      "disartria": 0.993,
      "dispneia": 0.0,
@@ -152,7 +157,7 @@
     }
    },
    "source": "audio.voice_analyzer",
-   "event_id": "43666649ca2f",
+   "event_id": "59027523b742",
    "severity": "critical"
   },
   {
@@ -169,14 +174,19 @@
      "parestesia facial"
     ],
     "sentiment": {
-     "label": "NEG",
-     "compound": -0.167,
-     "backend": "lexicon"
+     "label": "NEU",
+     "compound": -0.271,
+     "probas": {
+      "NEG": 0.297,
+      "NEU": 0.677,
+      "POS": 0.026
+     },
+     "backend": "pysentimiento"
     },
     "transcript_excerpt": "Minha esposa disse que minha fala está enrolada desde ontem à noite. Sinto uma fraqueza no braço direito e o rosto meio dormente. Não tenho febre nem dor de cabeça."
    },
    "source": "audio.clinical_nlp",
-   "event_id": "b011aaee3cea",
+   "event_id": "b5fe39e0766a",
    "severity": "critical"
   }
  ]

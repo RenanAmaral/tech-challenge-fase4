@@ -14,7 +14,8 @@ BAD = (40, 40, 220)
 INK = (40, 40, 40)
 # OpenCV não desenha acentos: rótulos ASCII
 LABEL = {"shallow": "amplitude reduzida", "asymmetric": "assimetria", "valgus": "valgo dinamico",
-         "trunk_lean": "tronco inclinado", "atypical": "padrao atipico", "fall": "queda"}
+         "trunk_lean": "tronco inclinado", "atypical": "padrao atipico",
+         "balance": "perda de equilibrio", "fall": "queda"}
 
 
 def project(kp_xyz: np.ndarray, size: int = 480, yaw_deg: float = 35.0) -> np.ndarray:
