@@ -1,6 +1,6 @@
 [
  {
-  "alert_id": "ef4480a9",
+  "alert_id": "03e6fe3b",
   "patient_id": "P001",
   "level": "attention",
   "risk": 0.56,
@@ -13,7 +13,7 @@
    "movement"
   ],
   "event_ids": [
-   "ad93b70abb18"
+   "ef95a74af436"
   ],
   "status": "open",
   "acknowledged_by": null,
@@ -28,7 +28,7 @@
   ]
  },
  {
-  "alert_id": "abaf9051",
+  "alert_id": "0b8e3369",
   "patient_id": "P004",
   "level": "attention",
   "risk": 0.542,
@@ -42,8 +42,8 @@
    "video"
   ],
   "event_ids": [
-   "efebf9e3d3d4",
-   "11238cd63763"
+   "202d114c5ca7",
+   "6beb40306d02"
   ],
   "status": "escalated",
   "acknowledged_by": null,
@@ -63,7 +63,7 @@
   ]
  },
  {
-  "alert_id": "485f02b1",
+  "alert_id": "2ebcb946",
   "patient_id": "P004",
   "level": "critical",
   "risk": 0.95,
@@ -78,9 +78,9 @@
    "video"
   ],
   "event_ids": [
-   "efebf9e3d3d4",
-   "11238cd63763",
-   "5e12115ef043"
+   "202d114c5ca7",
+   "6beb40306d02",
+   "906f0b841d27"
   ],
   "status": "open",
   "acknowledged_by": null,
@@ -90,12 +90,12 @@
    {
     "t": "2026-10-28T07:35:59.800000-03:00",
     "risk": 0.95,
-    "action": "escalonado de abaf9051"
+    "action": "escalonado de 0b8e3369"
    }
   ]
  },
  {
-  "alert_id": "90a7a3fd",
+  "alert_id": "f2599d40",
   "patient_id": "P002",
   "level": "critical",
   "risk": 0.95,
@@ -108,7 +108,7 @@
    "video"
   ],
   "event_ids": [
-   "3737b3a73b21"
+   "ef47d78e770a"
   ],
   "status": "open",
   "acknowledged_by": null,
@@ -123,7 +123,7 @@
   ]
  },
  {
-  "alert_id": "107b6236",
+  "alert_id": "e146af18",
   "patient_id": "P003",
   "level": "attention",
   "risk": 0.75,
@@ -136,8 +136,8 @@
    "vitals"
   ],
   "event_ids": [
-   "ceb26f1914cd",
-   "b5cc1b27ae4b"
+   "97cc26f8ffc2",
+   "6367494f0c10"
   ],
   "status": "escalated",
   "acknowledged_by": null,
@@ -157,7 +157,7 @@
   ]
  },
  {
-  "alert_id": "b72f356e",
+  "alert_id": "a67dc6eb",
   "patient_id": "P003",
   "level": "critical",
   "risk": 1.0,
@@ -174,11 +174,11 @@
    "vitals"
   ],
   "event_ids": [
-   "b5cc1b27ae4b",
-   "d2a41986172a",
-   "4b81170965ee",
-   "446778cb8b30",
-   "14f5d6b9f2be"
+   "6367494f0c10",
+   "b6f76d4e3a95",
+   "59027523b742",
+   "b5fe39e0766a",
+   "302b3fb2854e"
   ],
   "status": "open",
   "acknowledged_by": null,
@@ -188,7 +188,7 @@
    {
     "t": "2026-10-28T10:05:00-03:00",
     "risk": 1.0,
-    "action": "escalonado de 107b6236"
+    "action": "escalonado de e146af18"
    },
    {
     "t": "2026-10-28T10:15:00-03:00",
@@ -198,7 +198,7 @@
   ]
  },
  {
-  "alert_id": "8f2af6f4",
+  "alert_id": "68e2205b",
   "patient_id": "P003",
   "level": "attention",
   "risk": 0.765,
@@ -211,7 +211,7 @@
    "prescription"
   ],
   "event_ids": [
-   "dd5d6f377139"
+   "639c8791a82c"
   ],
   "status": "open",
   "acknowledged_by": null,
@@ -226,7 +226,7 @@
   ]
  },
  {
-  "alert_id": "7248d7ce",
+  "alert_id": "5691206e",
   "patient_id": "P001",
   "level": "critical",
   "risk": 0.855,
@@ -239,7 +239,7 @@
    "prescription"
   ],
   "event_ids": [
-   "582bf6651748"
+   "bc56e339c371"
   ],
   "status": "open",
   "acknowledged_by": null,
@@ -254,7 +254,7 @@
   ]
  },
  {
-  "alert_id": "5cb40cd2",
+  "alert_id": "f5f57927",
   "patient_id": "P001",
   "level": "attention",
   "risk": 0.628,
@@ -267,7 +267,7 @@
    "vitals"
   ],
   "event_ids": [
-   "9a8ef12e4cb7"
+   "c3f6c8a349a3"
   ],
   "status": "escalated",
   "acknowledged_by": null,
@@ -282,7 +282,7 @@
   ]
  },
  {
-  "alert_id": "d7a9164b",
+  "alert_id": "6c765fc1",
   "patient_id": "P001",
   "level": "critical",
   "risk": 1.0,
@@ -300,15 +300,15 @@
    "vitals"
   ],
   "event_ids": [
-   "9a8ef12e4cb7",
-   "1e7edbe3f1b3",
-   "55f58b80f774",
-   "2153f8d8afdc",
-   "68762fea48eb",
-   "4f56871c7655",
-   "ff7b7ae2a461",
-   "d77db5493264",
-   "195ff3bb2243"
+   "c3f6c8a349a3",
+   "5b06ee063cc6",
+   "a07cdca55d0d",
+   "48c7ce81896d",
+   "725988836d25",
+   "c5c8d758f2eb",
+   "34f262f5dfda",
+   "08717098cfa4",
+   "40f167a4280a"
   ],
   "status": "acknowledged",
   "acknowledged_by": "Enf. plantão (posto 2)",
@@ -318,7 +318,7 @@
    {
     "t": "2026-10-28T14:06:00-03:00",
     "risk": 0.8,
-    "action": "escalonado de 5cb40cd2"
+    "action": "escalonado de f5f57927"
    },
    {
     "t": "2026-10-28T14:10:00-03:00",
@@ -357,7 +357,7 @@
   ]
  },
  {
-  "alert_id": "57c06477",
+  "alert_id": "b7445e01",
   "patient_id": "P003",
   "level": "attention",
   "risk": 0.52,
@@ -370,7 +370,7 @@
    "movement"
   ],
   "event_ids": [
-   "a8956fc05215"
+   "e8f68536c7c1"
   ],
   "status": "open",
   "acknowledged_by": null,

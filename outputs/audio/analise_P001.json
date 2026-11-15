@@ -164,7 +164,7 @@
     }
    },
    "source": "audio.voice_analyzer",
-   "event_id": "2153f8d8afdc",
+   "event_id": "48c7ce81896d",
    "severity": "critical"
   },
   {
@@ -192,7 +192,7 @@
     "transcript_excerpt": "Doutor, desde a madrugada estou com muita falta de ar e um cansaço muito forte. Sinto uma pressão no peito quando tento levantar e fico tonto. Estou com medo, não consigo respirar direito."
    },
    "source": "audio.clinical_nlp",
-   "event_id": "68762fea48eb",
+   "event_id": "725988836d25",
    "severity": "critical"
   }
  ]

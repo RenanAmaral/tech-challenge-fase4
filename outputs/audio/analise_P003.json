@@ -157,7 +157,7 @@
     }
    },
    "source": "audio.voice_analyzer",
-   "event_id": "4b81170965ee",
+   "event_id": "59027523b742",
    "severity": "critical"
   },
   {
@@ -186,7 +186,7 @@
     "transcript_excerpt": "Minha esposa disse que minha fala está enrolada desde ontem à noite. Sinto uma fraqueza no braço direito e o rosto meio dormente. Não tenho febre nem dor de cabeça."
    },
    "source": "audio.clinical_nlp",
-   "event_id": "446778cb8b30",
+   "event_id": "b5fe39e0766a",
    "severity": "critical"
   }
  ]
