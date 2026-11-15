@@ -77,7 +77,7 @@ Python 3.10–3.12 recomendado (MediaPipe ainda não tem wheel para versões mai
 
 - O perfil "saudável" padrão (`models/voice_reference.json`) é **sintético**: contra ele, voz humana real dá falso positivo (teste de 06/11/2026: voz normal pelo WhatsApp → disartria 0,73).
 - Para voz real: `python scripts/voice_baseline.py normal1.mp4 normal2.mp4 normal3.mp4 --patient P010` (3–5 gravações de 15–30 s, falando normal, **mesmo canal** da consulta). Grava `models/voice_baseline_P010.json` (fora do Git); `analyze_audio.py --patient P010` passa a usá-lo e desliga o Random Forest.
-- `load_audio` aceita MP4/M4A/OPUS do WhatsApp via ffmpeg.
+- `load_audio` aceita MP4/M4A/OPUS do WhatsApp: usa o `ffmpeg` do PATH se houver; senão, decodifica com o PyAV (`av`, vem com o faster-whisper e traz o ffmpeg embutido). Resultado idêntico nos dois caminhos (testado em 14/11/2026). Útil no Windows, onde o VS Code pode não enxergar o `ffmpeg` recém-instalado pelo winget até reiniciar.
 - A condição e o escore de voz vêm do desvio do perfil; o Random Forest só atenua quando confia em "normal".
 
 ## Resultados de referência (da demo atual)
