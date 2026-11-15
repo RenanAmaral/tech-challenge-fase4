@@ -197,7 +197,20 @@ class ExerciseAnalyzer:
         for c in cand:
             after = aspect[c + w : c + w + int(fps)]
             if len(after) and np.median(after) > self.th.fall_aspect:
-                return Deviation("fall", None, int(c), int(min(len(com) - 1, c + w + int(fps))), 0.95,
+                # início = pico do centro de massa logo antes da descida (não o começo da janela,
+                # que pode cair ainda no fim do agachamento)
+                start = c + int(np.argmax(com[c : c + w + 1]))
+                # fim = enquanto o corpo segue na horizontal (paciente no chão), tolerando
+                # falhas curtas da pose; sem isso o vídeo voltava a "OK" com o paciente caído
+                end, gap, max_gap = c + w, 0, max(1, int(0.5 * fps))
+                for i in range(c + w + 1, len(com)):
+                    if aspect[i] > self.th.fall_aspect:
+                        end, gap = i, 0
+                    else:
+                        gap += 1
+                        if gap > max_gap:
+                            break
+                return Deviation("fall", None, int(start), int(end), 0.95,
                                  float(drop[c]), f"queda > {self.th.fall_drop_m} m em {self.th.fall_window_s} s",
                                  DEVIATION_TEXT["fall"])
         return None

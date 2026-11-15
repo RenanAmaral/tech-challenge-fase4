@@ -1,6 +1,6 @@
 {
  "patient_id": "P001",
- "audio_path": "data/audio/consulta_P001.wav",
+ "audio_path": "data\\audio\\consulta_P001.wav",
  "transcript": {
   "text": "Doutor, desde a madrugada estou com muita falta de ar e um cansaço muito forte. Sinto uma pressão no peito quando tento levantar e fico tonto. Estou com medo, não consigo respirar direito.",
   "backend": "sidecar",
@@ -122,8 +122,13 @@
   "medications": [],
   "sentiment": {
    "label": "NEG",
-   "compound": -0.667,
-   "backend": "lexicon"
+   "compound": -0.944,
+   "probas": {
+    "NEG": 0.954,
+    "NEU": 0.035,
+    "POS": 0.011
+   },
+   "backend": "pysentimiento"
   },
   "critical_terms": [
    "dispneia",
@@ -150,7 +155,7 @@
      "syllables_per_phrase: z=-5.7",
      "pause_ratio: z=+7.6"
     ],
-    "audio": "data/audio/consulta_P001.wav",
+    "audio": "data\\audio\\consulta_P001.wav",
     "classifier_probs": {
      "disartria": 0.0,
      "dispneia": 1.0,
@@ -159,7 +164,7 @@
     }
    },
    "source": "audio.voice_analyzer",
-   "event_id": "22b0df877038",
+   "event_id": "2153f8d8afdc",
    "severity": "critical"
   },
   {
@@ -176,13 +181,18 @@
     ],
     "sentiment": {
      "label": "NEG",
-     "compound": -0.667,
-     "backend": "lexicon"
+     "compound": -0.944,
+     "probas": {
+      "NEG": 0.954,
+      "NEU": 0.035,
+      "POS": 0.011
+     },
+     "backend": "pysentimiento"
     },
     "transcript_excerpt": "Doutor, desde a madrugada estou com muita falta de ar e um cansaço muito forte. Sinto uma pressão no peito quando tento levantar e fico tonto. Estou com medo, não consigo respirar direito."
    },
    "source": "audio.clinical_nlp",
-   "event_id": "6dcf72e155c7",
+   "event_id": "68762fea48eb",
    "severity": "critical"
   }
  ]

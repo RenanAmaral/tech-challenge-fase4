@@ -44,6 +44,11 @@ def test_fall(analyzer, t0):
     s = syn.generate_squat_session(reps=5, fall_at_rep=2, seed=11)
     r = analyzer.analyze(s.keypoints, s.fps, "P", t0)
     assert any(e.kind == "queda" and e.anomaly_score >= 0.9 for e in r.events)
+    # o intervalo cobre o paciente caído até o fim (o vídeo não pode voltar a "OK" no chão)
+    fall = next(d for d in r.deviations if d.kind == "fall")
+    label = next(lb for lb in s.labels if lb["kind"] == "fall")
+    assert label["start_frame"] - s.fps * 0.5 <= fall.start_frame <= label["start_frame"]
+    assert fall.end_frame >= label["end_frame"] - 1
 
 
 def test_missing_frames_are_tolerated(analyzer, t0):
