@@ -39,7 +39,7 @@ pre{background:var(--soft);padding:10px;border-radius:6px;overflow:auto;font-siz
 KIND_PT = {
     # vídeo
     "shallow": "amplitude reduzida", "asymmetric": "assimetria", "valgus": "valgo dinâmico",
-    "trunk_lean": "inclinação do tronco", "atypical": "padrão atípico", "fall": "queda", "queda": "queda",
+    "trunk_lean": "inclinação do tronco", "atypical": "padrão atípico", "balance": "perda de equilíbrio", "fall": "queda", "queda": "queda",
     "instrument_outside_field": "instrumento fora do campo", "camera_occlusion": "campo sem visibilidade",
     "gauze_count_mismatch": "contagem de gazes divergente", "instrument_count_mismatch": "contagem de instrumentos divergente",
     # prescrições

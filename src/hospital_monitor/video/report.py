@@ -51,7 +51,7 @@ def exercise_report(res: ExerciseResult, kp: np.ndarray, path: str | Path, sessi
     is3d = kp.shape[-1] == 4
     rows = [[r["rep"] + 1, f"{r['rom']:.0f}°", f"{r['asym_max']:.0f}°",
              f"{r['valgus_max']:.1f} cm" if is3d else "— (só 3D)",
-             f"{r['trunk_max']:.0f}°", f"{r['dtw']:.1f}",
+             f"{r['trunk_max']:.0f}°", f"{r['dtw']:.1f}", f"{r.get('foot_disp', 0) * 100:.0f}%",
              ", ".join(kind_pt(d["kind"]) for d in s["deviations"] if d["rep"] == r["rep"]) or "—"] for r in s["reps"]]
     dev_rows = [[esc(kind_pt(d.kind)), d.rep + 1 if d.rep is not None else "—", f"{d.start_frame / res.fps:.1f}–{d.end_frame / res.fps:.1f} s",
                  f"{d.measured:.1f}", esc(d.expected), f"{d.score:.2f}", esc(DEVIATION_TEXT[d.kind])] for d in res.deviations]
@@ -74,7 +74,7 @@ def exercise_report(res: ExerciseResult, kp: np.ndarray, path: str | Path, sessi
             + "<h2>Ângulos ao longo da sessão</h2>" + img(_angles_chart(res), "ângulos")
             + "<h2>Quadros-chave</h2><div class='grid'>" + figs + "</div>"
             + "<h2>Métricas por repetição</h2>"
-            + table(["Rep.", "ROM joelho", "Assimetria E/D", "Valgo", "Tronco máx.", "DTW", "Desvios"], rows)
+            + table(["Rep.", "ROM joelho", "Assimetria E/D", "Valgo", "Tronco máx.", "DTW", "Pé desloc. (% perna)", "Desvios"], rows)
             + "<h2>Desvios detectados</h2>"
             + (table(["Tipo", "Rep.", "Intervalo", "Medido", "Esperado", "Escore", "Interpretação"], dev_rows)
                if dev_rows else "<p>Nenhum.</p>")

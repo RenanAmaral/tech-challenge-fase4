@@ -75,6 +75,23 @@ def center_of_mass(kp: np.ndarray) -> np.ndarray:
     return np.nanmean(p[:, idx], axis=1)
 
 
+def leg_length(kp: np.ndarray) -> float:
+    """Comprimento típico quadril→tornozelo; escala para medidas independentes da câmera."""
+    p = _xyz(kp)
+    hips = p[:, [COCO["left_hip"], COCO["right_hip"]]]
+    ankles = p[:, [COCO["left_ankle"], COCO["right_ankle"]]]
+    return float(np.nanmedian(np.linalg.norm(hips - ankles, axis=-1)))
+
+
+def foot_displacement(kp: np.ndarray, s: int, e: int, scale: float) -> float:
+    """Maior deslocamento de um tornozelo durante a repetição, em relação à posição inicial,
+    em fração de ``scale`` (comprimento da perna). No agachamento os pés ficam parados; um
+    passo para recuperar o equilíbrio (pisar em falso) aparece como deslocamento grande."""
+    a = _xyz(kp)[s : e + 1, [COCO["left_ankle"], COCO["right_ankle"]]]
+    start = a[: min(3, len(a))].mean(axis=0)
+    return float(np.nanmax(np.linalg.norm(a - start, axis=-1)) / max(scale, 1e-9))
+
+
 def body_aspect(kp: np.ndarray) -> np.ndarray:
     """Razão largura/altura da caixa do corpo no plano da imagem (>1 ≈ deitado)."""
     p = _xyz(kp)

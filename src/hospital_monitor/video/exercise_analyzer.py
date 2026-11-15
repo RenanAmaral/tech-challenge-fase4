@@ -4,8 +4,8 @@ Fluxo:
   1. limpeza (interpolação de frames perdidos + suavização Savitzky-Golay);
   2. ângulos articulares, valgo dinâmico e inclinação do tronco;
   3. segmentação automática das repetições pelos vales do ângulo do joelho;
-  4. por repetição: amplitude (ROM), assimetria E/D, valgo, tronco e distância
-     DTW contra a execução de referência (padrão esperado);
+  4. por repetição: amplitude (ROM), assimetria E/D, valgo, tronco, deslocamento
+     dos pés (perda de equilíbrio) e distância DTW contra a execução de referência;
   5. detecção de queda (queda rápida do centro de massa + corpo horizontal);
   6. desvios → eventos de anomalia + dados para o relatório automático.
 """
@@ -29,11 +29,13 @@ DEVIATION_TEXT = {
     "valgus": "valgo dinâmico de joelho (joelho desloca para dentro)",
     "trunk_lean": "inclinação excessiva do tronco (compensação)",
     "atypical": "padrão de movimento diferente da referência (DTW)",
+    "balance": "perda de equilíbrio (pé sai do lugar, passo para se reequilibrar)",
     "fall": "queda do paciente durante a sessão",
 }
 # identificador curto em pt-BR (tipo do evento e rótulo nos quadros)
 DEVIATION_SLUG = {"shallow": "amplitude_reduzida", "asymmetric": "assimetria", "valgus": "valgo_dinamico",
-                  "trunk_lean": "inclinacao_tronco", "atypical": "padrao_atipico", "fall": "queda"}
+                  "trunk_lean": "inclinacao_tronco", "atypical": "padrao_atipico", "balance": "perda_equilibrio",
+                  "fall": "queda"}
 
 
 @dataclass
@@ -48,6 +50,8 @@ class ExerciseReference:
     n_reps: int
     asym_max: float = 0.0  # assimetria E/D da execução correta (em 2D, inclui o efeito do ângulo da câmera)
     asym_std: float = 0.0  # variação dessa assimetria entre as repetições corretas
+    foot_mean: float = 0.0  # deslocamento dos pés nas repetições corretas (fração da perna)
+    foot_std: float = 0.0
 
     def save(self, path: str | Path) -> None:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -67,6 +71,8 @@ class Thresholds:
     trunk_extra_deg: float = 20.0
     dtw_sigma: float = 4.0  # DTW > média + 4σ da referência → atípico
     dtw_min: float = 8.0  # piso em graus (referências muito homogêneas)
+    foot_min: float = 0.15  # pé desloca > 15% do comprimento da perna → perda de equilíbrio
+    foot_sigma: float = 3.0
     fall_drop_m: float = 0.30
     fall_window_s: float = 1.0
     fall_aspect: float = 1.2
@@ -83,6 +89,7 @@ class RepMetrics:
     valgus_max: float
     trunk_max: float
     dtw: float
+    foot_disp: float = 0.0
 
 
 @dataclass
@@ -162,15 +169,21 @@ def build_reference(kp: np.ndarray, fps: float) -> ExerciseReference:
     reps = segment_reps(knee, fps)
     if not reps:
         raise ValueError("nenhuma repetição encontrada na sessão de referência")
+    # a referência só deve ter repetições completas: um movimento parcial (ex.: caminhar até o
+    # celular no fim) inflaria a variação do DTW e afrouxaria o limite de "padrão atípico"
+    full = np.array([np.ptp(knee[s : e + 1]) for s, e in reps])
+    reps = [r for r, rom in zip(reps, full) if rom >= Thresholds.rom_ratio_min * np.median(full)]
     curves = np.stack([_rep_curve(ang, s, e) for s, e in reps])
     mean_curve = curves.mean(axis=0)
     dtws = [K.dtw_distance(c, mean_curve, band=10) for c in curves]
     roms = [np.ptp(knee[s : e + 1]) for s, e in reps]
     trunk = [ang["trunk_lean"][s : e + 1].max() for s, e in reps]
     asym = [np.max(np.abs(ang["knee_l"][s : e + 1] - ang["knee_r"][s : e + 1])) for s, e in reps]
+    leg = K.leg_length(kp)
+    foot = [K.foot_displacement(kp, s, e, leg) for s, e in reps]
     return ExerciseReference(mean_curve.round(3).tolist(), float(np.mean(roms)), float(np.mean(trunk)),
                              float(np.mean(dtws)), float(np.std(dtws)), len(reps), float(np.mean(asym)),
-                             float(np.std(asym)))
+                             float(np.std(asym)), float(np.mean(foot)), float(np.std(foot)))
 
 
 def _score(excess_ratio: float) -> float:
@@ -223,6 +236,8 @@ class ExerciseAnalyzer:
         dtw_thr = max(th.dtw_min, ref.dtw_mean + th.dtw_sigma * ref.dtw_std)
         reps: list[RepMetrics] = []
         devs: list[Deviation] = []
+        leg = K.leg_length(kp)
+        foot_lim = max(th.foot_min, ref.foot_mean + th.foot_sigma * ref.foot_std)
         for i, (s, e) in enumerate(segment_reps(knee, fps)):
             seg = slice(s, e + 1)
             rom = float(np.ptp(knee[seg]))
@@ -231,7 +246,8 @@ class ExerciseAnalyzer:
                              ang.get("valgus_r", np.zeros_like(knee))[seg].max()))
             trunk = float(ang["trunk_lean"][seg].max())
             dtw = K.dtw_distance(_rep_curve(ang, s, e), self.ref_curve, band=10)
-            reps.append(RepMetrics(i, s, e, rom, float(knee[seg].min()), asym, valg, trunk, dtw))
+            foot = K.foot_displacement(kp, s, e, leg)
+            reps.append(RepMetrics(i, s, e, rom, float(knee[seg].min()), asym, valg, trunk, dtw, foot))
             if rom < th.rom_ratio_min * ref.rom:
                 devs.append(Deviation("shallow", i, s, e, _score((th.rom_ratio_min * ref.rom - rom) / (0.3 * ref.rom)),
                                       rom, f"≥ {th.rom_ratio_min * ref.rom:.0f}° de ROM", DEVIATION_TEXT["shallow"]))
@@ -248,6 +264,10 @@ class ExerciseAnalyzer:
                 lim = ref.trunk_max + th.trunk_extra_deg
                 devs.append(Deviation("trunk_lean", i, s, e, _score((trunk - lim) / th.trunk_extra_deg), trunk,
                                       f"≤ {lim:.0f}° de inclinação", DEVIATION_TEXT["trunk_lean"]))
+            # pés devem ficar parados; um passo durante a repetição = perda de equilíbrio (risco de queda)
+            if foot > foot_lim:
+                devs.append(Deviation("balance", i, s, e, _score((foot - foot_lim) / foot_lim), foot,
+                                      f"≤ {foot_lim:.2f} × perna de deslocamento do pé", DEVIATION_TEXT["balance"]))
             already = any(d.rep == i for d in devs)
             if dtw > dtw_thr and not already:
                 devs.append(Deviation("atypical", i, s, e, _score((dtw - dtw_thr) / dtw_thr), dtw,

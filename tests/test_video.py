@@ -40,6 +40,28 @@ def test_normal_session_clean(analyzer, t0):
     assert analyzer.analyze(s.keypoints, s.fps, "P", t0).deviations == []
 
 
+def test_reference_ignores_partial_reps():
+    """Movimento parcial na gravação de referência não entra no padrão (nem afrouxa o DTW)."""
+    clean = syn.generate_squat_session(reps=6, seed=100)
+    noisy = syn.generate_squat_session(reps=6, deviation="shallow", deviation_reps=(5,), seed=100)
+    ref_clean, ref_noisy = build_reference(clean.keypoints, clean.fps), build_reference(noisy.keypoints, noisy.fps)
+    assert ref_noisy.n_reps == 5
+    assert ref_noisy.dtw_std <= ref_clean.dtw_std * 1.5 + 0.5
+
+
+def test_balance_loss_step(analyzer, t0):
+    """Pisar em falso: um pé sai do lugar no meio da repetição (ângulos quase normais)."""
+    s = syn.generate_squat_session(reps=6, seed=9)
+    kp = s.keypoints.copy()
+    reps = analyzer.analyze(kp, s.fps, "P", t0).reps
+    st, en = reps[2].start_frame, reps[2].end_frame
+    mid = (st + en) // 2
+    kp[mid : en + 1, 16, 0] += 0.25  # tornozelo direito dá um passo de 25 cm para o lado
+    r = analyzer.analyze(kp, s.fps, "P", t0)
+    assert {d.rep for d in r.deviations if d.kind == "balance"} == {2}
+    assert any(e.kind == "exercicio_perda_equilibrio" and 0.5 <= e.anomaly_score <= 0.75 for e in r.events)
+
+
 def test_fall(analyzer, t0):
     s = syn.generate_squat_session(reps=5, fall_at_rep=2, seed=11)
     r = analyzer.analyze(s.keypoints, s.fps, "P", t0)
